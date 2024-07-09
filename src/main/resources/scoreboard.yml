@@ -1,0 +1,75 @@
+# The 'player' group is set by default, just edit the template, header and footer for it.
+# If there is no atribute set in the 'scoreboard' area for a group, it will be set the default (player).
+# {clan_tag} - tag do clan.
+# {staff} - Varia os nicks dos staffs superiores online que são visíveis ao cargo ou, quando não há, indica apenas "superiores offline" (para staffs).
+# {staff_'group'}
+# {'group'_list}
+
+default-group: 'player'
+priority-time: # in seconds
+  low: 0
+  medium: 0
+  high: 0
+
+templates:
+  - player:
+      - ''
+      - '&6⧽ {player_displayname}'
+      - ''
+      - '&9⎧ {rank}'
+      - '&9⎩ %ezrankspro_rankprefix%{status_rankup}'
+      - ''
+      - '&2⎧ &aMoney&f: {money}'
+      - '&2⎩ &aCash&f: {cash}'
+      - ''
+      - '&5⎧ &dClan&f: %simpleclans_tag_label%'
+      - '&5⎩ &dKDR&f: %simpleclans_clan_total_kdr%'
+  - staff:
+      - ''
+      - '⎧ &6Staffs online&f: {staff_list}'
+      - '⎩ - &f{staff}'
+  - modstaff:
+      - ''
+      - '⎧ &6Superiores online&f: {staff_list}'
+      - '⎩ - &f{staff}'
+  - supstaff:
+      - ''
+      - '&6⧽ {player_displayname}'
+      - '&6Players online&f: {player_list}'
+      - ''
+      - '&2⎧ &aTps&f: {tps}'
+      - '&2⎩ &aPing&f: {ping}'
+  - admin:
+      - ''
+      - '⎧ &eAjudantes online&f: {ajd_list}'
+      - '⎜ &e- &f{staff_ajd}'
+      - '⎜ &dTrials online&f: {trial_list}'
+      - '⎜ &d- &f{staff_trial}'
+      - '⎜ &2Mods online&f: {mod_list}'
+      - '⎩ &2- &f{staff_mod}'
+  - gerente:
+      - ''
+      - '⎧ &cAdmins online&f: {adm_list}'
+      - '⎜ &c- &f{staff_admin}'
+      - '⎩ &6Staffs online&f: {staff_list}'
+  - diretor:
+      - ''
+      - '⎧ &eAjudantes&f: {ajd_list}'
+      - '⎜ &dTrials&f: {trial_list}'
+      - '⎜ &2Moderadores&f: {mod_list}'
+      - '⎜ &cAdmins&f: {adm_list}'
+      - '⎜ &4Gerentes&f: {gerente_list}'
+      - '⎩ &6Staffs online&f: {staff_list}'
+
+
+staff-status-enabled: true
+staff-status: ## set "staff-status" on the scoreboard footer
+  online:
+    - ''
+    - '&e⎧ Caso precise de ajuda'
+    - '&e⎜ chame um &lstaff&e:'
+    - '&e⎩ -&r {staff}'
+  offline:
+    - ''
+    - '&e⎧ &eTem dúvidas?'
+    - '&e⎩ Utilize /&fticket'

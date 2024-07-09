@@ -1,0 +1,15 @@
+name: NotzScoreboardV2
+version: 0.1
+main: dev.kaato.Main
+
+commands:
+  notzscoreboard:
+    description: notzscoreboard admin command
+    usage: /nsb
+    alises:
+      - notzsb
+      - nsb
+permissions:
+  notzscoreboard.admin:
+    description: Admin perm
+    default: false

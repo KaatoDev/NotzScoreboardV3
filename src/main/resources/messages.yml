@@ -1,0 +1,23 @@
+# Utilize {} e o nome do placeholder entre elas:
+# {display} = pega o nome de exibição do player;
+# {name} = pega o nome do player;
+# {default<0-9>} = utiliza uma própria string já previamente setada no plugin (não tem como mudar isto de fora do plugin);
+# {quantity} = pega a quantia do item.
+
+prefix: '&2[&fNotzScoreboardV2&2]&f'
+
+messages:
+  no-perm: '&cSem permissão.'
+
+items:
+  voltar:
+    name: '&e&lVoltar'
+    lore:
+      - '&7Clique para voltar.'
+    material: ARROW
+  sair:
+    name: '&4&lSair'
+    lore:
+      - '&cClique aqui para'
+      - '&cfechar o menu.'
+    material: BARRIER
