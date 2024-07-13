@@ -1,9 +1,18 @@
 # The 'player' group is set by default, just edit the template, header and footer for it.
 # If there is no atribute set in the 'scoreboard' area for a group, it will be set the default (player).
 # {clan_tag} - tag do clan.
-# {staff} - Varia os nicks dos staffs superiores online que são visíveis ao cargo ou, quando não há, indica apenas "superiores offline" (para staffs).
-# {staff_'group'}
-# {'group'_list}
+# {staff} - Varia os nicks dos players dos grupos visíveis daquele grupo.
+# {staff_'group'} - Pega um dos players daquele grupo.
+# {'group'_list} - Pega a quantidade de player online naquele grupo.
+# {player_name} - Nome do plauer.
+# {player_displayname} - Displayname do player.
+# {money} - Dinheiro do player direto do Vault.
+# {tps} - TPS do servidor.
+# {ping} - Ping do player.
+# {rank} - (yRanks do yPlugins) Ele utiliza da tag para cor e depois o nome.
+# {status_rankup} - (yRanks do yPlugins) Ele utiliza da tag para cor e depois o status.
+# {clan} - (simpleclans)
+# {clankdr} - (simpleclans)
 
 default-group: 'player'
 priority-time: # in seconds
@@ -62,8 +71,7 @@ templates:
       - '⎩ &6Staffs online&f: {staff_list}'
 
 
-staff-status-enabled: true
-staff-status: ## set "staff-status" on the scoreboard footer
+staff-status: ## set "staff-status" on the scoreboard footer to use this feature. If the group has player online in one of the VisibleGroups, it will use te online, otherwise it will use the offline.
   online:
     - ''
     - '&e⎧ Caso precise de ajuda'

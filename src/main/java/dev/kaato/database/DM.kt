@@ -51,15 +51,17 @@ class DM {
     fun loadScoreboards(): HashMap<String, ScoreboardM> {
         val sql = "select * from scoreboardmodel"
 
-        c.prepareStatement(sql).use {
-            val scoreboards = hashMapOf<String, ScoreboardM>()
+        c.prepareStatement(sql).use { ps ->
+            ps.executeQuery().use {
+                val scoreboards = hashMapOf<String, ScoreboardM>()
 
-            it.executeQuery().use { rs -> {
-                while (rs.next())
-                    scoreboards[rs.getString("name")] = deserialize(rs.getBytes("scoreboard"))!!
-            } }
+                while (it.next()) {
+//                    println(it.getString("name"))
+                    scoreboards[it.getString("name")] = deserialize(it.getBytes("scoreboard"))!!
+                }
 
-            return scoreboards
+                return scoreboards
+            }
         }
     }
 
@@ -134,11 +136,12 @@ class DM {
         return outputStream.toByteArray()
     }
 
-    @Throws(java.lang.RuntimeException::class)
+    @Throws(RuntimeException::class)
     private fun deserialize(inputStream: ByteArray): ScoreboardM? {
         if (ByteArrayInputStream(inputStream).available() == 0) return null
 
         val dataInput = BukkitObjectInputStream(ByteArrayInputStream(inputStream))
+        dataInput.readInt()
 
         val s = dataInput.readObject() as ScoreboardModel
         val scoreboard = ScoreboardM(s.name, s.display, s.header, s.template, s.footer, s.color, s.useStaffStatus, s.visibleGroups, s.priority)

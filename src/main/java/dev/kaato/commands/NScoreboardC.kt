@@ -6,6 +6,7 @@ import dev.kaato.manager.PlayerManager.seePlayers
 import dev.kaato.manager.ScoreboardManager.createScoreboard
 import dev.kaato.manager.ScoreboardManager.default_group
 import dev.kaato.manager.ScoreboardManager.deleteScoreboard
+import dev.kaato.manager.ScoreboardManager.notScoreboards
 import dev.kaato.manager.ScoreboardManager.scoreboards
 import dev.kaato.manager.ScoreboardManager.update
 import notzapi.utils.MessageU.send
@@ -20,13 +21,10 @@ import java.text.ParseException
 import java.util.*
 
 class NScoreboardC : TabExecutor {
-    private lateinit var p: Player
-    private var scoreboard: ScoreboardM? = null
-
     override fun onCommand(sender: CommandSender?, cmd: Command?, label: String?, args: Array<out String>?): Boolean {
         if (sender !is Player) return false
 
-        p = sender
+        val p: Player = sender
 
         if (isntAdmin(p)) {
             send(p, "no-perm")
@@ -34,10 +32,10 @@ class NScoreboardC : TabExecutor {
         }
 
         val a = args?.map { it.lowercase() }
-        scoreboard = if (a?.isNotEmpty() == true && scoreboards.containsKey(a[0])) scoreboards[a[0]] else null
+        val scoreboard = if (a?.isNotEmpty() == true && scoreboards.containsKey(a[0])) scoreboards[a[0]] else null
 
         when (a!!.size) {
-            1 -> when (a[0]) {
+            1 ->  if (scoreboard == null) when (a[0]) {
                 "list" -> {
                     sendHeader(p, scoreboards.values.joinToString(separator = "\n", prefix = "", postfix = "") { "${it.name}&e: &f${it.getDisplay()}" })
                 }
@@ -48,10 +46,12 @@ class NScoreboardC : TabExecutor {
                     update()
                     send(p, "&aPlugin reiniciado.")
                 }
-                else -> help()
-            }
+                else -> help(p, scoreboard)
+            } else help(p, scoreboard)
 
-            2 -> if (a[0] == "delete") {
+            2 -> if (scoreboard != null && a[1] == "players")
+                    seePlayers(p, a[0])
+                else if (a[0] == "delete") {
                 val isDeleted = deleteScoreboard(a[1])
 
                 if (isDeleted != null) {
@@ -62,10 +62,13 @@ class NScoreboardC : TabExecutor {
 
                 } else send(p, "&eA scoreboard ${scoreboards[a[1]]!!.getDisplay()}&e está setada como padrão e por isso &cnão pode ser deletada&e!")
 
-            } else help()
+            } else help(p, scoreboard)
 
             3 -> if (a[0] == "create") {
-                if (createScoreboard(a[1], args[2]))
+                if (notScoreboards.contains(a[1]))
+                    send(p, "&cUtilize outro nome para a scoreboard!")
+
+                else if (createScoreboard(a[1], args[2]))
                     send(p, "&eA &fscoreboard ${args[2]}&e foi criada com &asucesso&e!")
 
                 else send(p, "&cA &fscoreboard ${a[1]}&c já existe!")
@@ -190,8 +193,8 @@ class NScoreboardC : TabExecutor {
                     }
                 }
 
-            else help()
-            else -> help()
+            else help(p, scoreboard)
+            else -> help(p, scoreboard)
         }
 
         return true
@@ -199,12 +202,13 @@ class NScoreboardC : TabExecutor {
 
     override fun onTabComplete(sender: CommandSender?, cmd: Command?, label: String?, args: Array<out String>?): MutableList<String> {
         val a = args?.map { it.lowercase() }
-        scoreboard = if (a?.isNotEmpty() == true && scoreboards.containsKey(a[0])) scoreboards[a[0]] else null
+
+        val scoreboard = if (a?.isNotEmpty() == true && scoreboards.containsKey(a[0])) scoreboards[a[0]] else null
 
         return Collections.emptyList()
     }
 
-    private fun help() {
+    private fun help(p: Player, scoreboard: ScoreboardM?) {
         if (scoreboard == null)
             sendHeader(p, """
                 &eUtilize &f/&enotzscoreboard &7+
@@ -217,9 +221,10 @@ class NScoreboardC : TabExecutor {
             """.trimIndent())
 
         else sendHeader(p, """
-            &f/&ensb &a${scoreboard!!.name} &7+
+            &f/&ensb &a${scoreboard.name} &7+
             &7+ addplayer <player>
             &7+ addgroup <group>
+            &7+ players
             &7+ remplayer <player>
             &7+ remgroup <group>
             &7+ setcolor <color>

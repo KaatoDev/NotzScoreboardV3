@@ -24,8 +24,9 @@ dependencies {
     compileOnly 'org.spigotmc:spigot-api:1.12-R0.1-SNAPSHOT'
     implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
     implementation 'dev.kaato:NotzAPI:0.4.2'
+    implementation 'org.xerial:sqlite-jdbc:3.46.0.0'
+    compileOnly 'me.clip:placeholderapi:2.11.5'
 }
-
 
 def targetJavaVersion = 8
 java {

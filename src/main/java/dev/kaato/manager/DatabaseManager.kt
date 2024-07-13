@@ -4,12 +4,13 @@ import dev.kaato.database.DM
 import dev.kaato.entities.ScoreboardM
 import dev.kaato.entities.ScoreboardM.ScoreboardModel
 import org.bukkit.entity.Player
+import java.io.IOException
+import java.sql.SQLException
 
 object DatabaseManager {
     val dm = DM()
 
     fun insertScoreboardDatabase(scoreboard: ScoreboardModel) {
-        dm.insertScoreboard(scoreboard)
     }
 
     fun deleteScoreboardDatabase(scoreboard: ScoreboardModel) {
@@ -20,8 +21,16 @@ object DatabaseManager {
         dm.updateScoreboard(scoreboard)
     }
 
-    fun loadScoreboardsDatabase(): HashMap<String, ScoreboardM> {
-        return dm.loadScoreboards()
+    fun loadScoreboardsDatabase(): HashMap<String, ScoreboardM>? {
+        return try {
+            dm.loadScoreboards()
+        } catch (e: SQLException) {
+            e.printStackTrace()
+            null
+        } catch (e: IOException) {
+            e.printStackTrace()
+            null
+        }
     }
 
     fun insertPlayerDatabase(player: Player, scoreboard: String) {

@@ -3,6 +3,6 @@ useMySQL: false
 mysql:
   host: 'localhost'
   port: '3306'
-  database: 'db_notzeconomy'
+  database: 'db_notzscoreboard'
   user: 'root'
   password: ''

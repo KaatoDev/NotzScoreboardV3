@@ -1,6 +1,7 @@
 package dev.kaato
 
 import dev.kaato.commands.NScoreboardC
+import dev.kaato.commands.NTestC
 import dev.kaato.events.JoinLeaveE
 import dev.kaato.manager.ScoreboardManager.load
 import dev.kaato.manager.ScoreboardManager.shutdown
@@ -48,10 +49,12 @@ class Main : JavaPlugin() {
         regEvents()
         regTabs()
 
+        letters()
     }
 
     private fun regCommands() {
-        getCommand("notzscoreboard").executor = NScoreboardC()
+        getCommand("nscoreboard").executor = NScoreboardC()
+        getCommand("nt").executor = NTestC()
     }
 
     private fun regEvents() {
@@ -59,7 +62,7 @@ class Main : JavaPlugin() {
     }
 
     private fun regTabs() {
-        getCommand("notzscoreboard").tabCompleter = NScoreboardC()
+        getCommand("nscoreboard").tabCompleter = NScoreboardC()
     }
 
     private fun letters() {

@@ -65,8 +65,10 @@ object PlayerManager {
         Bukkit.getOnlinePlayers().forEach(::joinPlayer)
     }
 
-    fun seePlayers(player: Player) {
-        val scores = scoreboards.values.filter { it.name != default_group && it.getPlayers().isNotEmpty() }
+    fun seePlayers(player: Player, scoreboard: String = "") {
+        val all = scoreboard.isBlank()
+
+        val scores = scoreboards.values.filter { (if (all) it.name != default_group else it.name == scoreboard) && it.getPlayers().isNotEmpty() }
 
         if (scores.isNotEmpty()) {
             val scorePlayers = mutableListOf<String>()
