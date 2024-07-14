@@ -94,7 +94,7 @@ class DM {
 
     @Throws(SQLException::class, IOException::class)
     fun updatePlayer(player: Player, scoreboard: String) {
-        val sql = "update playermodel set scoreboard = ? where name = ?"
+        val sql = "update playermodel set scoreboardname = ? where name = ?"
 
         c.prepareStatement(sql).use {
             it.setString(1, scoreboard)
@@ -144,7 +144,7 @@ class DM {
         dataInput.readInt()
 
         val s = dataInput.readObject() as ScoreboardModel
-        val scoreboard = ScoreboardM(s.name, s.display, s.header, s.template, s.footer, s.color, s.useStaffStatus, s.visibleGroups, s.priority)
+        val scoreboard = ScoreboardM(s.name, s.display, s.header, s.template, s.footer, s.color, s.visibleGroups)
 
         dataInput.close()
 

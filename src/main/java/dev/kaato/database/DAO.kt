@@ -18,8 +18,8 @@ class DAO {
             create table if not exists playermodel(
             id int primary key auto_increment,
             name varchar(36) unique not null,
-            scoreboardid int not null,
-            constraint scoreboardidfk foreign key (scoreboardid) references scoreboardmodel(id) on delete cascade)
+            scoreboardname int not null,
+            constraint scoreboardnamefk foreign key (scoreboardname) references scoreboardmodel(name) on delete cascade)
         """.trimIndent())
 
     else arrayOf("""
@@ -31,8 +31,8 @@ class DAO {
             create table if not exists playermodel(
             id integer primary key autoincrement,
             name varchar(36) unique not null,
-            scoreboardid int not null,
-            constraint scoreboardidfk foreign key (scoreboardid) references scoreboardmodel(id) on delete cascade)
+            scoreboardname int not null,
+            constraint scoreboardnamefk foreign key (scoreboardname) references scoreboardmodel(name) on delete cascade)
         """.trimIndent())
 
 

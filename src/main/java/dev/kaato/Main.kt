@@ -1,7 +1,6 @@
 package dev.kaato
 
 import dev.kaato.commands.NScoreboardC
-import dev.kaato.commands.NTestC
 import dev.kaato.events.JoinLeaveE
 import dev.kaato.manager.ScoreboardManager.load
 import dev.kaato.manager.ScoreboardManager.shutdown
@@ -16,7 +15,6 @@ import org.bukkit.scheduler.BukkitRunnable
 
 class Main : JavaPlugin() {
     companion object {
-        lateinit var plugin: JavaPlugin
         lateinit var pathRaw: String
 
         lateinit var cf: NotzYAML
@@ -27,13 +25,11 @@ class Main : JavaPlugin() {
     }
 
     override fun onEnable() {
-        plugin = this
         pathRaw = dataFolder.absolutePath
+        notzAPI = NotzAPI(this)
 
-        cf = NotzYAML(plugin, "config")
-        sf = NotzYAML(plugin, "scoreboard")
-
-        notzAPI = NotzAPI(plugin)
+        cf = NotzYAML("config")
+        sf = NotzYAML("scoreboard")
         msgf = messageManager.messageFile
 
         object : BukkitRunnable() {
@@ -54,7 +50,6 @@ class Main : JavaPlugin() {
 
     private fun regCommands() {
         getCommand("nscoreboard").executor = NScoreboardC()
-        getCommand("nt").executor = NTestC()
     }
 
     private fun regEvents() {

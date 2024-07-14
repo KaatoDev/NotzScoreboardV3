@@ -1,9 +1,11 @@
 package dev.kaato.manager
 
+import dev.kaato.entities.ScoreboardM
 import dev.kaato.manager.DatabaseManager.deletePlayerDatabase
 import dev.kaato.manager.DatabaseManager.insertPlayerDatabase
 import dev.kaato.manager.DatabaseManager.loadPlayersDatabase
 import dev.kaato.manager.DatabaseManager.updatePlayerDatabase
+import dev.kaato.manager.ScoreboardManager.checkVisibleGroupsBy
 import dev.kaato.manager.ScoreboardManager.default_group
 import dev.kaato.manager.ScoreboardManager.scoreboards
 import notzapi.utils.MessageU.send
@@ -40,28 +42,42 @@ object PlayerManager {
         else send(Bukkit.getConsoleSender(), "&cNão foi possível remover/atribuir uma scoreboard ao player &f${player.name}&c. Erro: pmanager2 ")
     }
 
-    fun updatePlayerGroup(player: Player, scoreboard: String?): Boolean {
-        if (scoreboard != null && scoreboard != default_group) {
+    fun checkPlayer(player: Player, scoreboard: ScoreboardM? = null, isDefault: Boolean? = null) {
+        if (scoreboard != null && !scoreboard.isDefault()) {
             if (players.containsKey(player.name)) {
+                updatePlayerDatabase(player, scoreboard.name)
                 scoreboards[players[player.name]]!!.remPlayer(player)
-                updatePlayerDatabase(player, scoreboard)
 
-            } else insertPlayerDatabase(player, scoreboard)
+            } else {
+                insertPlayerDatabase(player, scoreboard.name)
+                scoreboards[default_group]!!.remPlayer(player)
+            }
 
-            players[player.name] = scoreboard
+            checkVisibleGroupsBy(scoreboard.name)
+            players[player.name] = scoreboard.name
 
-        } else if (players.containsKey(player.name)) {
-            deletePlayerDatabase(player)
+        } else if (isDefault != null && !isDefault && players.containsKey(player.name)) {
+            scoreboards[players[player.name]]!!.remPlayer(player)
+            checkVisibleGroupsBy(players[player.name]!!)
             players.remove(player.name)
+            deletePlayerDatabase(player)
+            scoreboards[default_group]!!.addPlayer(player)
+        }
+    }
 
-        } else return false
+    fun resetPlayer(sender: Player, player: Player) {
+        if (players.containsKey(player.name)) {
+            checkPlayer(player, isDefault = false)
+            send(sender, "&eA scoreboard do &fplayer ${player.name}&e foi resetada para a padrão.")
 
-        return true
+        } else send(sender, "&cO &fplayer ${player.name}&c já está na scoreboard padrão!")
     }
 
     fun loadPlayers() {
         loadPlayersDatabase().forEach { players[it.key] = it.value }
+    }
 
+    fun initializePlayers() {
         Bukkit.getOnlinePlayers().forEach(::joinPlayer)
     }
 

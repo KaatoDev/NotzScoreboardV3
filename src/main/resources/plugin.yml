@@ -10,9 +10,6 @@ commands:
       - notzscoreboard
       - notzsb
       - nsb
-  nt:
-    description: notzscoreboard admin command
-    usage: /nsb
 permissions:
   notzscoreboard.admin:
     description: Admin perm

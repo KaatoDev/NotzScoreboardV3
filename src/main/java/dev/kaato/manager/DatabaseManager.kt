@@ -8,9 +8,10 @@ import java.io.IOException
 import java.sql.SQLException
 
 object DatabaseManager {
-    val dm = DM()
+    private val dm = DM()
 
     fun insertScoreboardDatabase(scoreboard: ScoreboardModel) {
+        dm.insertScoreboard(scoreboard)
     }
 
     fun deleteScoreboardDatabase(scoreboard: ScoreboardModel) {

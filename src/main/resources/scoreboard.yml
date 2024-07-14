@@ -1,7 +1,7 @@
 # The 'player' group is set by default, just edit the template, header and footer for it.
 # If there is no atribute set in the 'scoreboard' area for a group, it will be set the default (player).
 # {clan_tag} - tag do clan.
-# {staff} - Varia os nicks dos players dos grupos visíveis daquele grupo.
+# {staff} - Varia os nicks dos players onlines dos grupos visíveis daquele grupo.} - Quantidade de players online nos grupos visíveis daquele grupo.
 # {staff_'group'} - Pega um dos players daquele grupo.
 # {'group'_list} - Pega a quantidade de player online naquele grupo.
 # {player_name} - Nome do plauer.
@@ -14,12 +14,22 @@
 # {clan} - (simpleclans)
 # {clankdr} - (simpleclans)
 
-default-group: 'player'
-priority-time: # in seconds
-  low: 0
-  medium: 0
-  high: 0
+placeholders: # all words included in here will be replaced with {} around in the system.
+  - nsb: "notzscoreboard"
 
+
+default-group: 'player'
+priority-time: # in seconds | default is 20 seconds
+  diretor: 1
+  gerente: 1
+  player: 5
+
+# This plugin use Teams on scoreboard, what means that when a line has
+# a placeholder (% or {}) the code of the plugin separates the line
+# between prefix (before placeholder) and suffix (placeholder).
+# The prefix max length is 38 and the suffix is 16
+# This make the scoreboard more efficient and the line flexible.
+# To keep a line with placeholder static, use # in the start of the line.
 templates:
   - player:
       - ''
@@ -40,33 +50,33 @@ templates:
   - modstaff:
       - ''
       - '⎧ &6Superiores online&f: {staff_list}'
-      - '⎩ - &f{staff}'
+      - '⎩ - &f{supstaff}'
   - supstaff:
       - ''
       - '&6⧽ {player_displayname}'
       - '&6Players online&f: {player_list}'
       - ''
-      - '&2⎧ &aTps&f: {tps}'
+      - '#&2⎧ &aTps&f: {tps}'
       - '&2⎩ &aPing&f: {ping}'
   - admin:
       - ''
-      - '⎧ &eAjudantes online&f: {ajd_list}'
-      - '⎜ &e- &f{staff_ajd}'
+      - '⎧ &eAjudantes online&f: {ajudante_list}'
+      - '⎜ &e- &f{staff_ajudante}'
       - '⎜ &dTrials online&f: {trial_list}'
       - '⎜ &d- &f{staff_trial}'
-      - '⎜ &2Mods online&f: {mod_list}'
-      - '⎩ &2- &f{staff_mod}'
+      - '⎜ &2Mods online&f: {moderador_list}'
+      - '⎩ &2- &f{staff_moderador}'
   - gerente:
       - ''
-      - '⎧ &cAdmins online&f: {adm_list}'
+      - '⎧ &cAdmins online&f: {admin_list}'
       - '⎜ &c- &f{staff_admin}'
       - '⎩ &6Staffs online&f: {staff_list}'
   - diretor:
       - ''
-      - '⎧ &eAjudantes&f: {ajd_list}'
+      - '⎧ &eAjudantes&f: {ajudante_list}'
       - '⎜ &dTrials&f: {trial_list}'
-      - '⎜ &2Moderadores&f: {mod_list}'
-      - '⎜ &cAdmins&f: {adm_list}'
+      - '⎜ &2Moderadores&f: {moderador_list}'
+      - '⎜ &cAdmins&f: {admin_list}'
       - '⎜ &4Gerentes&f: {gerente_list}'
       - '⎩ &6Staffs online&f: {staff_list}'
 
