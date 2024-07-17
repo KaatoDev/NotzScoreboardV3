@@ -10,6 +10,7 @@ import dev.kaato.manager.ScoreboardManager.getTemplate
 import notzapi.NotzAPI.Companion.placeholderManager
 import notzapi.NotzAPI.Companion.plugin
 import notzapi.utils.MessageU.c
+import notzapi.utils.MessageU.getMessage
 import notzapi.utils.MessageU.set
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
@@ -20,8 +21,8 @@ import java.io.Serializable
 import kotlin.random.Random
 
 /**
- * @param name Unique name for use in commands.
- * @param display Displayname that will appear on message.
+ * @param name Unique name to be used in commands.
+ * @param display Displayname that will appear on messages.
  * @param header Header template of the scoreboard.
  * @param template Main template of the scoreboard.
  * @param footer Footer template of the scoreboard.
@@ -32,8 +33,8 @@ class ScoreboardM(val name: String, private var display: String, private var hea
     data class ScoreboardModel(val name: String, val display: String, val header: String, val template: String, val footer: String, val color: String, val visibleGroups: MutableList<String>) : Serializable
 
     /**
-    * @param name Unique name for use in commands.
-    * @param display Displayname that will appear on message.
+    * @param name Unique name to be used in commands.
+    * @param display Displayname that will appear on messages.
     */
     constructor(name: String, display: String) : this(name, display, "", "player", "staff-status", "&e", mutableListOf()) {
         insertScoreboardDatabase(toModel())
@@ -205,7 +206,7 @@ class ScoreboardM(val name: String, private var display: String, private var hea
 
     /** Updates the {staff_(scoreboard)} and the {(scoreboard)_list} palceholders. */
     private fun updatePlaceholder() {
-        val player = if (players.isNotEmpty()) players[Random.nextInt(players.size)].name!! else "&fOffline"
+        val player = if (players.isNotEmpty()) players[Random.nextInt(players.size)].name!! else getMessage("status.offline")
 
         placeholderManager.addPlaceholder("{staff_$name}", player)
         placeholderManager.addPlaceholder("{${name}_list}", players.size.toString())
@@ -343,8 +344,8 @@ class ScoreboardM(val name: String, private var display: String, private var hea
     /** @return Return the {staff} placeholder of this scoreboard. */
     private fun staffLine(placeholder: String): String {
         return if (getPlayersFromGroups(visibleGroups).isEmpty()) {
-            if (placeholder == "{staff}") c("&fStaff offline")
-            else c("&fSuperiores offline")
+            if (placeholder == "{staff}") getMessage("status.staff")
+            else getMessage("status.supstaff")
         } else getPlayerFromGroup(visibleGroups)
     }
 
@@ -381,7 +382,7 @@ class ScoreboardM(val name: String, private var display: String, private var hea
 // -------------------
     // task - start
 
-    /** Run the self update scoreboard task. */
+    /** Run the self-update scoreboard task. */
     private fun runTask() {
         val time = (if (sf.config.contains("priority-time.$name")) sf.config.getLong("priority-time.$name") else 20) * 20
 
@@ -392,7 +393,7 @@ class ScoreboardM(val name: String, private var display: String, private var hea
         }.runTaskTimer(plugin, 0, time)
     }
 
-    /** Cancel the self update scoreboard task */
+    /** Cancel the self-update scoreboard task */
     fun cancelTask() {
         if (players.isEmpty() && isntDefault && task != null)
             task!!.cancel()
@@ -401,7 +402,7 @@ class ScoreboardM(val name: String, private var display: String, private var hea
     /**
      * @param minutes Time in minutes of the break.
      * @return If it has a task running.
-     * Pause the self update scoreboard task for N minutes
+     * Pause the self-update scoreboard task for N minutes
      */
     fun pauseTask(minutes: Int = 1): Boolean {
         return if (task != null) {

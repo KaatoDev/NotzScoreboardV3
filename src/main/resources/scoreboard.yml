@@ -11,7 +11,9 @@
 # `{rank} `- (yRanks do yPlugins) Ele utiliza a tag como cor e depois o nome.
 # `{status_rankup}` - (yRanks do yPlugins) Ele utiliza a tag como cor e depois o status.
 # `{tps} - `TPS do servidor.
-# `{staff}` - Pega o nick de um dos players online dos grupos visíveis daquele grupo. - Quantidade de players online nos grupos visíveis daquele grupo.
+# `{staff}` - Pega o nick de um dos players online dos grupos visíveis daquele grupo.
+# `{supstaff}` - Mesma coisa que o {staff}, porém retorna uma mensagem alternativa caso o player esteja offline
+# `{staff_list}` - Quantidade de players online nos grupos visíveis daquele grupo.
 # `{staff_list}` - Quantidade de players online nos grupos visíveis daquele grupo.
 # `{staff_'group'}` - Pega um dos players daquele grupo.
 # `{'group'_list}` - Pega a quantidade de player online naquele grupo.

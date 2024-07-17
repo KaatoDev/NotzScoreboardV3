@@ -49,7 +49,12 @@ messages:
   resetPlayer2: '&cO &fplayer {default}&c já está na scoreboard padrão!'
   seePlayers: '&cNão há players com outra scoreboard além da padrão.'
   updateAllScoreboards: '&eTodas as scoreboards foram atualizadas.'
-  
+
+  status:
+    staff: '&fStaff offline'
+    supstaff: '&fSuperiores offline'
+    offline: '&fOffline'
+
   commands:
     notzscoreboard: '&eUtilize'
     create: 'Cria a scoreboard com opção de já setar as templates.'
