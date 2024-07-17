@@ -1,20 +1,22 @@
-# The 'player' group is set by default, just edit the template, header and footer for it.
+# The 'player' group is set by default, edit the template, header and footer for it.
 # If there is no atribute set in the 'scoreboard' area for a group, it will be set the default (player).
-# {clan_tag} - tag do clan.
-# {staff} - Varia os nicks dos players onlines dos grupos visíveis daquele grupo.} - Quantidade de players online nos grupos visíveis daquele grupo.
-# {staff_'group'} - Pega um dos players daquele grupo.
-# {'group'_list} - Pega a quantidade de player online naquele grupo.
-# {player_name} - Nome do plauer.
-# {player_displayname} - Displayname do player.
-# {money} - Dinheiro do player direto do Vault.
-# {tps} - TPS do servidor.
-# {ping} - Ping do player.
-# {rank} - (yRanks do yPlugins) Ele utiliza da tag para cor e depois o nome.
-# {status_rankup} - (yRanks do yPlugins) Ele utiliza da tag para cor e depois o status.
-# {clan} - (simpleclans)
-# {clankdr} - (simpleclans)
 
-placeholders: # all words included in here will be replaced with {} around in the system.
+# `{clan} `- Nome do clan. (Simpleclans)
+# `{clan_tag}` - Tag do clan. (Simpleclans)
+# `{clankdr}` - KDR do clan. (Simpleclans)
+# `{money}` - Dinheiro do player direto do Vault.
+# `{player_name}` - Nome do player.
+# `{player_displayname}` - Displayname do player.
+# `{ping} `- Ping do player.
+# `{rank} `- (yRanks do yPlugins) Ele utiliza a tag como cor e depois o nome.
+# `{status_rankup}` - (yRanks do yPlugins) Ele utiliza a tag como cor e depois o status.
+# `{tps} - `TPS do servidor.
+# `{staff}` - Pega o nick de um dos players online dos grupos visíveis daquele grupo. - Quantidade de players online nos grupos visíveis daquele grupo.
+# `{staff_list}` - Quantidade de players online nos grupos visíveis daquele grupo.
+# `{staff_'group'}` - Pega um dos players daquele grupo.
+# `{'group'_list}` - Pega a quantidade de player online naquele grupo.
+
+placeholders: # All words included here will need to be replaced with {} around to be used.
   - nsb: "notzscoreboard"
 
 default-group: 'player'
@@ -24,10 +26,10 @@ priority-time: # in seconds | default is 20 seconds
   player: 5
 
 # This plugin use Teams on scoreboard, what means that when a line has
-# a placeholder (% or {}) the code of the plugin separates the line
+# a placeholder (% or {}), the code of the plugin separates the line
 # between prefix (before placeholder) and suffix (placeholder).
-# The prefix max length is 38 and the suffix is 16
-# This make the scoreboard more efficient and the line flexible.
+# The prefix max length is 38 and the suffix is 16.
+# This makes the scoreboard more efficient and the line flexible.
 # To keep a line with placeholder static, use # in the start of the line.
 templates:
   - player:
@@ -82,7 +84,7 @@ templates:
       - '⎩ &6Staffs online&f: {staff_list}'
 
 
-staff-status: ## set "staff-status" on the scoreboard footer to use this feature. If the group has player online in one of the VisibleGroups, it will use te online, otherwise it will use the offline.
+staff-status: ## Set "staff-status" on the scoreboard footer to use this feature. If the group has player online in one of the VisibleGroups, it will use te online, otherwise it will use the offline.
   online:
     - ''
     - '&e⎧ Caso precise de ajuda'

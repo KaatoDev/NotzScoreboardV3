@@ -130,24 +130,24 @@ object ScoreboardManager {
 
         if (header != null) {
             if (header != score.getHeader())
-                send(player, "setTemplate1", listOf(score.getDisplay(), score.getHeader(), header))
-            else send(player, "setTemplate2", score.getDisplay())
+                send(player, "setTemplate1", listOf("header", score.getDisplay(), score.getHeader(), header))
+            else send(player, "setTemplate2", listOf("header", score.getDisplay()))
         }
 
         if (template != null) {
             if (template != score.getTemplate())
-                send(player, "setTemplate3", listOf(score.getDisplay(), score.getTemplate(), template))
-            else send(player, "setTemplate4", score.getDisplay())
+                send(player, "setTemplate1", listOf("template", score.getDisplay(), score.getTemplate(), template))
+            else send(player, "setTemplate2", listOf("template", score.getDisplay()))
         }
 
         if (footer != null) {
             if (footer != score.getFooter())
-                send(player, "setTemplate5", listOf(score.getDisplay(), score.getFooter(), footer))
-            else send(player, "setTemplate6", score.getDisplay())
+                send(player, "setTemplate1", listOf("footer", score.getDisplay(), score.getFooter(), footer))
+            else send(player, "setTemplate2", listOf("footer", score.getDisplay()))
         }
 
         if (header == null && template == null && footer == null)
-            send(player, "setTemplate7")
+            send(player, "setTemplate3")
 
         scoreboards[scoreboard]!!.setTemplate(header, template, footer)
     }

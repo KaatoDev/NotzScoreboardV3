@@ -18,6 +18,7 @@ import dev.kaato.manager.ScoreboardManager.setTemplate
 import dev.kaato.manager.ScoreboardManager.update
 import dev.kaato.manager.ScoreboardManager.updateAllScoreboards
 import dev.kaato.manager.ScoreboardManager.viewScoreboard
+import notzapi.utils.MessageU.getMessage
 import notzapi.utils.MessageU.send
 import notzapi.utils.MessageU.sendHeader
 import notzapi.utils.OthersU.isntAdmin
@@ -212,34 +213,34 @@ class NScoreboardC : TabExecutor {
     private fun help(p: Player, scoreboard: String? = null) {
         if (scoreboard == null)
             sendHeader(p, """
-                &eUtilize &f/&enotzscoreboard &7+
-                &7+ &ecreate &f<&ename&f> &f<&edisplay&f> (&eheader&f) (&etemplate&f) (&efooter&f) &7-  
-                &7+ &edelete &f<&escoreboard&f> &7- Deleta uma scoreboard
-                &7+ &elist &7- Lista todas as scoreboards criadas.
-                &7+ &eplayers &7- Lista todos os players registrados e suas respectivas scoreboards.
-                &7+ &ereload &7- Recarrega partes o plugin.
-                &7+ &ereset &f<&eplayer&f> &7- Reseta a scoreboard do player para a scoreboard padrão.
-                &7+ &eset &f<&escoreboard&f> &7- Seta a própria scoreboard.
-                &7+ &eupdate &7- Atualiza todas as scoreboards.
+                ${getMessage("commands.notzscoreboard")} &f/&enotzscoreboard &7+
+                &7+ &ecreate &f<&ename&f> &f<&edisplay&f> (&eheader&f) (&etemplate&f) (&efooter&f) &7- ${getMessage("commands.create")}
+                &7+ &edelete &f<&escoreboard&f> &7- ${getMessage("commands.delete")}
+                &7+ &elist &7- ${getMessage("commands.list")}
+                &7+ &eplayers &7- ${getMessage("commands.players")}
+                &7+ &ereload &7- ${getMessage("commands.reload")}
+                &7+ &ereset &f<&eplayer&f> &7- ${getMessage("commands.reset")}
+                &7+ &eset &f<&escoreboard&f> &7- ${getMessage("setcommands.:")}
+                &7+ &eupdate &7- ${getMessage("commands.update")}
             """.trimIndent())
 
         else sendHeader(p, """
-            &f/&ensb &a${scoreboard} &7+
-            &7+ &eaddplayer &f<&eplayer&f> &7- Adiciona um player à scoreboard.
-            &7+ &eaddgroup &f<&egroup&f> &7- Adiciona um grupo ao VisibleGroups da scoreboard
-            &7+ &eclearheader &7- Limpa a header da scoreboard.
-            &7+ &eclearfooter &7- Limpa a footer da scoreboard.
-            &7+ &ecleartemplate &7- Limpa o template da scoreboard.
-            &7+ &epause &f(&eminutes&f) &7- Pausa a atualização da scoreboard por X minutos (por padrão é pausado por 1 minuto).
-            &7+ &eplayers &7- Vê os players cadastrados na scoreboard.
-            &7+ &eremplayer &f<&eplayer&f> &7- Remove um player da scoreboard.
-            &7+ &eremgroup &f<&egroup&f> &7- Remove um grupo do VisibleGroups da scoreboard
-            &7+ &esetcolor &f<&ecolor&f> &7- Seta uma nova cor da scoreboard.
-            &7+ &esetdisplay &f<&edisplay&f> &7- Seta um novo display na scoreboard.
-            &7+ &esetheader &f<&etemplate&f> &7- Seta uma nova header na scoreboard.
-            &7+ &esetfooter &f<&etemplate&f> &7- Seta uma nova footer na scoreboard.
-            &7+ &esettemplate &f<&etemplate&f> &7- Seta um novo template na scoreboard.
-            &7+ &eview &7- Visualiza a scoreboard sem precisar setar.
+            &f/&enotzsb &a${scoreboard} &7+
+            &7+ &eaddplayer &f<&eplayer&f> &7- ${getMessage("commands.scoreboard.addplayer")}
+            &7+ &eaddgroup &f<&egroup&f> &7- ${getMessage("commands.scoreboard.addgroup")}
+            &7+ &eclearheader &7- ${getMessage("commands.scoreboard.clearheader")}
+            &7+ &eclearfooter &7- ${getMessage("commands.scoreboard.clearfooter")}
+            &7+ &ecleartemplate &7- ${getMessage("commands.scoreboard.cleartemplate")}
+            &7+ &epause &f(&eminutes&f) &7- ${getMessage("commands.scoreboard.pause")}
+            &7+ &eplayers &7- ${getMessage("commands.scoreboard.players")}
+            &7+ &eremplayer &f<&eplayer&f> &7- ${getMessage("commands.scoreboard.remplayer")}
+            &7+ &eremgroup &f<&egroup&f> &7- ${getMessage("commands.scoreboard.remgroup")}
+            &7+ &esetcolor &f<&ecolor&f> &7- ${getMessage("commands.scoreboard.setcolor")}
+            &7+ &esetdisplay &f<&edisplay&f> &7- ${getMessage("commands.scoreboard.setdisplay")}
+            &7+ &esetheader &f<&etemplate&f> &7- ${getMessage("commands.scoreboard.setheader")}
+            &7+ &esetfooter &f<&etemplate&f> &7- ${getMessage("commands.scoreboard.setfooter")}
+            &7+ &esettemplate &f<&etemplate&f> &7- ${getMessage("commands.scoreboard.settemplate")}
+            &7+ &eview &7- ${getMessage("commands.scoreboard.view")}
         """.trimIndent())
     }
 }
