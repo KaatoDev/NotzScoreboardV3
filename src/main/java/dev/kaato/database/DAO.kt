@@ -39,8 +39,8 @@ class DAO {
     init {
         try {
             Class.forName("org.sqlite.JDBC");
-            c = DriverManager.getConnection("jdbc:sqlite:$pathRaw/notzscoreboard.db")
-            sql.forEach { c.prepareStatement(it).use { ps -> ps.execute() } }
+                c = DriverManager.getConnection("jdbc:sqlite:$pathRaw/notzscoreboard.db")
+                sql.forEach { c.prepareStatement(it).use { ps -> ps.execute() } }
 
         } catch (e: SQLException) {
             throw RuntimeException(e)

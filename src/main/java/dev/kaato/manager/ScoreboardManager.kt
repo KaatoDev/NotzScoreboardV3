@@ -10,6 +10,7 @@ import dev.kaato.manager.PlayerManager.players
 import me.clip.placeholderapi.PlaceholderAPI
 import notzapi.NotzAPI.Companion.placeholderManager
 import notzapi.utils.MessageU.c
+import notzapi.utils.MessageU.join
 import notzapi.utils.MessageU.send
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
@@ -36,7 +37,7 @@ object ScoreboardManager {
             if (name == default_group) scoreboard.setDefault(true)
             if (player != null) {
                 addPlayerTo(player, player, name)
-                send(player, "&eA &fscoreboard $display&e foi criada com &asucesso&e!")
+                send(player, "createScoreboard", display)
             }
 
             true
@@ -59,54 +60,54 @@ object ScoreboardManager {
     fun viewScoreboard(player: Player, scoreboard: String) {
         if (scoreboards.contains(scoreboard)) {
             scoreboards[scoreboard]!!.getScoreboard(player)
-            send(player, "&eVisualizando &fscoreboard ${display(scoreboard)}&e.")
+            send(player, "viewScoreboard1", display(scoreboard))
 
-        } else send(player, "&cEsta scoreboard não existe.")
+        } else send(player, "viewScoreboard2")
     }
 
     fun pauseScoreboard(player: Player, scoreboard: String, minutes: Int = 1) {
         if (scoreboards.contains(scoreboard)) {
             scoreboards[scoreboard]!!.pauseTask(minutes)
-            send(player, "&ePausando &fscoreboard ${display(scoreboard)}&e por &a${minutes}&f minuto${if (minutes>1) "s" else ""}&e.")
+            send(player, "pauseScoreboard1", listOf(display(scoreboard), minutes.toString(), if (minutes>1) "s" else ""))
 
-        } else send(player, "&cEsta scoreboard não existe.")
+        } else send(player, "pauseScoreboard2")
     }
 
     fun addPlayerTo(sender: Player, player: Player, scoreboard: String) {
         val score = scoreboards[scoreboard]!!
 
         if (score.addPlayer(player)) {
-            send(sender, "&eA &fscoreboard ${score.getDisplay()}&e foi adicionada ao player ${player.name}&e.")
+            send(sender, "addPlayerTo1", listOf(score.getDisplay(), player.name))
 
             checkPlayer(player, score)
 
-        } else send(sender, "&cO player ${player.name}&c já possui esta scoreboard.")
+        } else send(sender, "addPlayerTo2", player.name)
     }
 
     fun remPlayerFrom(sender: Player, player: Player, scoreboard: String) {
         val score = scoreboards[scoreboard]!!
 
         if (score.remPlayer(player)) {
-            send(sender, "&eA &fscoreboard ${display(scoreboard)}&e foi removida do player ${player.name}&e.")
+            send(sender, "remPlayerFrom1", listOf(score.getDisplay(), player.name))
             checkPlayer(player, isDefault = score.isDefault())
 
-        } else send(sender, "&cO player ${player.name}&c possui a &fscoreboard ${if (players.containsKey(player.name)) players[player.name] else default_group}&c.")
+        } else send(sender, "remPlayerFrom2", listOf(player.name, if (players.containsKey(player.name)) players[player.name]!! else default_group))
     }
 
     fun addGroupTo(player: Player, scoreboard: String, group: String) {
         val score = scoreboards[scoreboard]!!
 
         if (score.addGroup(group))
-            send(player, "&eO grupo ${display(group)}&e foi adicionado aos visiblegroups da &fscoreboard ${score.getDisplay()}&e.")
-        else send(player, "&cO grupo ${display(group)}&c já faz parte dos visiblegroups da &fscoreboard ${score.getDisplay()}&c.")
+            send(player, "addGroupTo1", listOf(display(group), score.getDisplay()))
+        else send(player, "addGroupTo2", listOf(display(group), score.getDisplay()))
     }
 
     fun remGroupFrom(player: Player, scoreboard: String, group: String) {
         val score = scoreboards[scoreboard]!!
 
         if (score.remGroup(group))
-            send(player, "&eO grupo ${display(group)}&e foi removido dos visiblegroups da &fscoreboard ${score.getDisplay()}&e.")
-        else send(player, "&cO grupo ${display(group)}&c não faz parte dos visiblegroups da &fscoreboard ${score.getDisplay()}&c.")
+            send(player, "remGroupFrom1", listOf(display(group), score.getDisplay()))
+        else send(player, "remGroupFrom2", listOf(display(group), score.getDisplay()))
     }
 
     fun setDisplay(player: Player, scoreboard: String, display: String) {
@@ -115,9 +116,9 @@ object ScoreboardManager {
 
         if (display == temp) {
             score.setDisplay(display)
-            send(player, "&eDisplay da &fscoreboard $scoreboard&e alterado de &c$temp&e para &a$display&e.")
+            send(player, "setDisplay1", listOf(scoreboard, temp , display))
 
-        } else send(player, "&aEsta já é o display atual da &fscoreboard $scoreboard&c!")
+        } else send(player, "setDisplay2", scoreboard)
     }
 
     fun setTemplate(scoreboard: String, header: String? = null, template: String? = null, footer: String? = null) {
@@ -129,24 +130,24 @@ object ScoreboardManager {
 
         if (header != null) {
             if (header != score.getHeader())
-                send(player, "&eA header da &fscoreboard ${score.getDisplay()}&e foi alterado de &f'&c${score.getHeader()}&f' &epara &a$header&e.")
-            else send(player, "&aEsta já é a header atual da &fscoreboard ${score.getDisplay()}&c!")
+                send(player, "setTemplate1", listOf(score.getDisplay(), score.getHeader(), header))
+            else send(player, "setTemplate2", score.getDisplay())
         }
 
         if (template != null) {
             if (template != score.getTemplate())
-                send(player, "&eO template da &fscoreboard ${score.getDisplay()}&e foi alterado de &f'&c${score.getTemplate()}&f' &epara &a$template&e.")
-            else send(player, "&aEste já é o template atual da &fscoreboard ${score.getDisplay()}&c!")
+                send(player, "setTemplate3", listOf(score.getDisplay(), score.getTemplate(), template))
+            else send(player, "setTemplate4", score.getDisplay())
         }
 
         if (footer != null) {
             if (footer != score.getFooter())
-                send(player, "&eA footer da &fscoreboard ${score.getDisplay()}&e foi alterado de &f'&c${score.getHeader()}&f' &epara &a$footer&e.")
-            else send(player, "&aEsta já é a footer atual da &fscoreboard ${score.getDisplay()}&c!")
+                send(player, "setTemplate5", listOf(score.getDisplay(), score.getFooter(), footer))
+            else send(player, "setTemplate6", score.getDisplay())
         }
 
         if (header == null && template == null && footer == null)
-            send(player, "&cVocê precisa inserir pelo menos 1 campo dos templates!")
+            send(player, "setTemplate7")
 
         scoreboards[scoreboard]!!.setTemplate(header, template, footer)
     }
@@ -157,8 +158,8 @@ object ScoreboardManager {
 
         if (color != temp) {
             score.setColor(color)
-            send(player, "&eA color da &fscoreboard ${display(scoreboard)}&e foi alterado de &c'$temp${temp[0]}$temp${temp[1]}&c'&e para &a'$color${color[0]}$color${color[1]}&a'&e.")
-        } else send(player, "&aEsta já é a cor atual da &fscoreboard ${score.getDisplay()}&c!")
+            send(player, "setColor1", listOf(display(scoreboard), join(temp.map { temp+it })/*"$temp${temp[0]}$temp${temp[1]}"*/, join(color.map { color+it })/*"$color${color[0]}$color${color[1]}"*/))
+        } else send(player, "setColor2", score.getDisplay())
 
     }
 
@@ -173,6 +174,11 @@ object ScoreboardManager {
     fun update() {
         shutdown()
         load()
+    }
+
+    fun updateAllScoreboards(p: Player) {
+        scoreboards.values.forEach { it.update() }
+        send(p, "updateAllScoreboards")
     }
 
     fun getTemplate(template: String, visibleGroups: List<String>? = null): List<String> {
@@ -202,7 +208,11 @@ object ScoreboardManager {
     }
 
     fun shutdown() {
-        scoreboards.forEach { it.value.shutdown()}
+        scoreboards.values.forEach {
+            it.pauseTask()
+            it.shutdown()
+            it.cancelTask()
+        }
     }
 
     // geral - end

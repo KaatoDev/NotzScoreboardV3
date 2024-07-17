@@ -68,9 +68,9 @@ object PlayerManager {
     fun resetPlayer(sender: Player, player: Player) {
         if (players.containsKey(player.name)) {
             checkPlayer(player, isDefault = false)
-            send(sender, "&eA scoreboard do &fplayer ${player.name}&e foi resetada para a padrão.")
+            send(sender, "resetPlayer1", player.name)
 
-        } else send(sender, "&cO &fplayer ${player.name}&c já está na scoreboard padrão!")
+        } else send(sender, "resetPlayer2", player.name)
     }
 
     fun loadPlayers() {
@@ -93,6 +93,6 @@ object PlayerManager {
 
             sendHeader(player, scorePlayers.joinToString(separator = "\n", prefix = "", postfix = ""))
 
-        } else send(player, "&cNão há players com scoreboard além da padrão.")
+        } else send(player, "seePlayers")
     }
 }

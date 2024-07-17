@@ -17,7 +17,6 @@
 placeholders: # all words included in here will be replaced with {} around in the system.
   - nsb: "notzscoreboard"
 
-
 default-group: 'player'
 priority-time: # in seconds | default is 20 seconds
   diretor: 1
@@ -56,7 +55,7 @@ templates:
       - '&6⧽ {player_displayname}'
       - '&6Players online&f: {player_list}'
       - ''
-      - '#&2⎧ &aTps&f: {tps}'
+      - '&2⎧ &aTps&f: {tps}'
       - '&2⎩ &aPing&f: {ping}'
   - admin:
       - ''
@@ -65,7 +64,9 @@ templates:
       - '⎜ &dTrials online&f: {trial_list}'
       - '⎜ &d- &f{staff_trial}'
       - '⎜ &2Mods online&f: {moderador_list}'
-      - '⎩ &2- &f{staff_moderador}'
+      - '⎜ &2- &f{staff_moderador}'
+      - '⎜ &6Superiores online&f: {staff_list}'
+      - '⎩ &4- &f{staff}'
   - gerente:
       - ''
       - '⎧ &cAdmins online&f: {admin_list}'

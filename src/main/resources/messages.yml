@@ -8,16 +8,48 @@ prefix: '&2[&fNotzScoreboardV2&2]&f'
 
 messages:
   no-perm: '&cSem permissão.'
-
-items:
-  voltar:
-    name: '&e&lVoltar'
-    lore:
-      - '&7Clique para voltar.'
-    material: ARROW
-  sair:
-    name: '&4&lSair'
-    lore:
-      - '&cClique aqui para'
-      - '&cfechar o menu.'
-    material: BARRIER
+  reload: '&aPlugin reiniciado.'
+  clearHeader: '&eA header da &fscoreboard {default}&e foi resetada!'
+  clearFooter: '&eA footer da &fscoreboard {default}&e foi resetada!'
+  clearTemplate: '&eO template da &fscoreboard {default}&e foi resetado!'
+  delete1: '&eA &fscoreboard {default}&e foi &cdeletada&e com &asucesso&e!'
+  delete2: '&cA scoreboard inserida não existe!'
+  delete3: '&eA scoreboard ${}&e está setada como padrão e por isso &cnão pode ser deletada&e!'
+  addplayer: '&cO player inserido não existe ou está offline.'
+  addgroup: '&cO grupo inserido não existe.'
+  pause: '&cUtilize apenas números no argumento!'
+  remplayer: '&cO player inserido não existe ou está offline.'
+  remgroup: '&cO grupo inserido não existe.'
+  setcolor: '&cUtilize um formato válido de cor. &7(/cores)'
+  template: '&eAs templates da crate foram devidamente setadas!'
+  create1: '&cA &fscoreboard ${}&c já existe!'
+  create2: '&cUtilize outro nome para a scoreboard!'
+  createScoreboard: '&eA &fscoreboard {}&e foi criada com &asucesso&e!'
+  viewScoreboard1: '&eVisualizando &fscoreboard ${}&e.'
+  viewScoreboard2: '&cEsta scoreboard não existe.'
+  pauseScoreboard1: '&ePausando &fscoreboard {default1}&e por &a{default2} &fminuto{default3}&e.'
+  pauseScoreboard2: '&cEsta scoreboard não existe.'
+  addPlayerTo21: '&eA &fscoreboard ${1}&e foi adicionada ao player ${2}&e.'
+  addPlayerTo2: '&cO player ${}&c já possui esta scoreboard.'
+  remPlayerFrom1: '&eA &fscoreboard ${1}&e foi removida do player ${2}&e.'
+  remPlayerFrom2: '&cO player ${1}&c possui a &fscoreboard ${2}&c.'
+  addGroupTo1: '&eO grupo ${1}&e foi adicionado aos visiblegroups da &fscoreboard ${2}&e.'
+  addGroupTo2: '&cO grupo ${1}&c já faz parte dos visiblegroups da &fscoreboard ${2}&c.'
+  remGroupFrom1: '&eO grupo ${1}&e foi removido dos visiblegroups da &fscoreboard ${2}&e'
+  remGroupFrom2: '&cO grupo ${1}&c não faz parte dos visiblegroups da &fscoreboard ${2}&c.'
+  setDisplay1: '&eDisplay da &fscoreboard {1}&e alterado de &c{2}&e para &a{3}&e.'
+  setDisplay2: '&aEsta já é o display atual da &fscoreboard $scoreboard&c!'
+  setTemplate1: "&eA header da &fscoreboard ${1}&e foi alterado de &f'&c${2}&f' &epara &a${3}&e."
+  setTemplate2: '&aEsta já é a header atual da &fscoreboard ${}&c!'
+  setTemplate3: "&eO template da &fscoreboard ${1}&e foi alterado de &f'&c${3}&f' &epara &a${3}&e."
+  setTemplate4: '&aEste já é o template atual da &fscoreboard ${}&c!'
+  setTemplate5: "&eA footer da &fscoreboard ${1}&e foi alterado de &f'&c${3}&f' &epara &a{3}&e."
+  setTemplate6: '&aEsta já é a footer atual da &fscoreboard ${}&c!'
+  setTemplate7: '&cVocê precisa preencher pelo menos um dos campos de template!'
+  setColor1: "&eA color da &fscoreboard ${display(scoreboard)}&e foi alterado de &c'$temp${temp[0]}$temp${temp[1]}&c'&e para &a'$color${color[0]}$color${color[1]}&a'&e."
+  setColor2: '&aEsta já é a cor atual da &fscoreboard ${score.getDisplay()}&c!'
+  reset: '&cO player inserido não existe ou está offline.'
+  resetPlayer1: '&eA scoreboard do &fplayer {default}&e foi resetada para a padrão.'
+  resetPlayer2: '&cO &fplayer {default}&c já está na scoreboard padrão!'
+  seePlayers: '&cNão há players com outra scoreboard além da padrão.'
+  updateAllScoreboards: '&eTodas as scoreboards foram atualizadas.'

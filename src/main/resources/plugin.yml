@@ -1,5 +1,5 @@
-name: NotzScoreboardV2
-version: 0.1
+name: NotzScoreboardV3
+version: 0.4
 main: dev.kaato.Main
 
 commands:

@@ -19,9 +19,22 @@ import org.bukkit.scoreboard.DisplaySlot
 import java.io.Serializable
 import kotlin.random.Random
 
+/**
+ * @param name Unique name for use in commands.
+ * @param display Displayname that will appear on message.
+ * @param header Header template of the scoreboard.
+ * @param template Main template of the scoreboard.
+ * @param footer Footer template of the scoreboard.
+ * @param color The color that will be set on the start of each line.
+ * @param visibleGroups List of scoreboard groups that's used for the {staff} placeholder.
+ */
 class ScoreboardM(val name: String, private var display: String, private var header: String, private var template: String, private var footer: String, private var color: String, private val visibleGroups: MutableList<String>) {
     data class ScoreboardModel(val name: String, val display: String, val header: String, val template: String, val footer: String, val color: String, val visibleGroups: MutableList<String>) : Serializable
 
+    /**
+    * @param name Unique name for use in commands.
+    * @param display Displayname that will appear on message.
+    */
     constructor(name: String, display: String) : this(name, display, "", "player", "staff-status", "&e", mutableListOf()) {
         insertScoreboardDatabase(toModel())
     }
@@ -38,38 +51,47 @@ class ScoreboardM(val name: String, private var display: String, private var hea
 // -------------------
     // getters - start
 
+    /** @return Scoreboard's displayname.*/
     fun getDisplay(): String {
         return display
     }
 
+    /** @return Scoreboard's player list.*/
     fun getPlayers(): MutableList<Player> {
         return players
     }
 
+    /** @return Scoreboard's visible groups.*/
     fun getVisibleGroups(): MutableList<String> {
         return visibleGroups
     }
 
+    /** @return Scoreboard's header template.*/
     fun getHeader(): String {
         return header
     }
 
+    /** @return Scoreboard's main template.*/
     fun getTemplate(): String {
         return template
     }
 
+    /** @return Scoreboard's footer template.*/
     fun getFooter(): String {
         return footer
     }
 
+    /** @return Scoreboard's color.*/
     fun getColor(): String {
         return color
     }
 
+    /** @return If the scoreboard is set as default. */
     fun isDefault(): Boolean {
         return !isntDefault
     }
 
+    /** Set the scoreboard on a player (used to view the scoreboard) */
     fun getScoreboard(player: Player) {
         scoreboardCreate(player)
     }
@@ -79,6 +101,12 @@ class ScoreboardM(val name: String, private var display: String, private var hea
 // -------------------
     // setters - start
 
+    /**
+     * @param header New header template to be set.
+     * @param template New main template to be set.
+     * @param footer New footer template to be set.
+     * Insert any of the 3 parameters.
+     */
     fun setTemplate(header: String? = null, template: String? = null, footer: String? = null) {
         this.header = header ?: this.header
         this.template = template ?: this.template
@@ -87,17 +115,20 @@ class ScoreboardM(val name: String, private var display: String, private var hea
         databaseUpdate()
     }
 
+    /** @param color New color template to be set. */
     fun setColor(color: String) {
         this.color = color
         update()
         databaseUpdate()
     }
 
+    /** @param display New display to be set. */
     fun setDisplay(display: String) {
         this.display = display
         databaseUpdate()
     }
 
+    /** @param default alter if the scoreboard is default. */
     fun setDefault(default: Boolean) {
         isntDefault = !default
     }
@@ -106,6 +137,10 @@ class ScoreboardM(val name: String, private var display: String, private var hea
 // -------------------
     // adds - start
 
+    /**
+     * @param player New player to be added to the player list.
+     * @return If contains the player on the list or not.
+     */
     fun addPlayer(player: Player): Boolean {
         return if (!players.contains(player)) {
             if (players.isEmpty())
@@ -118,6 +153,10 @@ class ScoreboardM(val name: String, private var display: String, private var hea
         } else false
     }
 
+    /**
+     * @param group New group to be added to the visible groups.
+     * @return If contains the group on the list or not.
+     */
     fun addGroup(group: String): Boolean {
         return if (!visibleGroups.contains(group)) {
             visibleGroups.add(group)
@@ -132,6 +171,10 @@ class ScoreboardM(val name: String, private var display: String, private var hea
 // -------------------
     // rems - start
 
+    /**
+     * @param player The player to be removed of the player list.
+     * @return If contains the player on the list or not.
+     */
     fun remPlayer(player: Player): Boolean {
         return if (players.contains(player)) {
             players.remove(player)
@@ -142,6 +185,10 @@ class ScoreboardM(val name: String, private var display: String, private var hea
         } else false
     }
 
+    /**
+     * @param group The group to be removed of the visible groups.
+     * @return If contains the group on the list or not.
+     */
     fun remGroup(group: String): Boolean {
         return if (visibleGroups.contains(group)) {
             visibleGroups.remove(group)
@@ -156,6 +203,7 @@ class ScoreboardM(val name: String, private var display: String, private var hea
 // -------------------
     // updaters - start
 
+    /** Updates the {staff_(scoreboard)} and the {(scoreboard)_list} palceholders. */
     private fun updatePlaceholder() {
         val player = if (players.isNotEmpty()) players[Random.nextInt(players.size)].name!! else "&fOffline"
 
@@ -163,11 +211,13 @@ class ScoreboardM(val name: String, private var display: String, private var hea
         placeholderManager.addPlaceholder("{${name}_list}", players.size.toString())
     }
 
+    /** Call the updatePlayer() method for each player. */
     fun updatePlayers() {
         if (players.isNotEmpty())
             players.forEach(::updatePlayer)
     }
 
+    /** Update the players' scoreboard or create a new scoreboard if necessary */
     private fun updatePlayer(player: Player) {
         if (player.scoreboard?.getObjective(name) == null)
             scoreboardCreate(player)
@@ -175,7 +225,8 @@ class ScoreboardM(val name: String, private var display: String, private var hea
 
     }
 
-    fun update() { // create in manager
+    /** Update scoreboard's lines and placeholders and the players' scoreboards. */
+    fun update() {
         if (linesList.isNotEmpty())
             linesList.clear()
 
@@ -203,6 +254,7 @@ class ScoreboardM(val name: String, private var display: String, private var hea
 // -------------------
     // scoreboard - start
 
+    /** Sets the scoreboard on the player */
     private fun scoreboardCreate(player: Player) {
         val scoreboard = Bukkit.getScoreboardManager().newScoreboard
         val objective = scoreboard.registerNewObjective(name, "yummy")
@@ -234,7 +286,7 @@ class ScoreboardM(val name: String, private var display: String, private var hea
                 if (prefix.length > 30)
                     prefix = c("&cLine $index ")
                 if (suffix.length > 16)
-                    suffix = c("Suffix too big")
+                    suffix = c("Suffix too large")
 
                 team.addEntry(prefix)
                 team.suffix = suffix
@@ -242,7 +294,7 @@ class ScoreboardM(val name: String, private var display: String, private var hea
                 objective.getScore(prefix).score = index
 
             } else if (l.length > 38)
-                objective.getScore(c("&cLine $index is too big")).score = index
+                objective.getScore(c("&cLine $index is too large")).score = index
 
             else if (l.length > 2 && l[2] == '#')
                 objective.getScore(l.replaceFirst("#", "")).score = index
@@ -257,6 +309,7 @@ class ScoreboardM(val name: String, private var display: String, private var hea
         }
     }
 
+    /** Updates the players scoreboard. */
     private fun scoreboardUpdate(player: Player) {
         linesList.forEachIndexed { i, line ->
 
@@ -276,7 +329,7 @@ class ScoreboardM(val name: String, private var display: String, private var hea
                 if (prefix.length > 30)
                     prefix = c("&cLine $index ")
                 if (suffix.length > 16)
-                    suffix = c("Suffix too big")
+                    suffix = c("Suffix too large")
 
                 player.scoreboard.getTeam(name + index).suffix = suffix
             }
@@ -287,6 +340,7 @@ class ScoreboardM(val name: String, private var display: String, private var hea
 // -------------------
     // managers - start
 
+    /** @return Return the {staff} placeholder of this scoreboard. */
     private fun staffLine(placeholder: String): String {
         return if (getPlayersFromGroups(visibleGroups).isEmpty()) {
             if (placeholder == "{staff}") c("&fStaff offline")
@@ -294,23 +348,28 @@ class ScoreboardM(val name: String, private var display: String, private var hea
         } else getPlayerFromGroup(visibleGroups)
     }
 
+    /** @return Return the {staff_list} placeholder of this scoreboard. */
     private fun staffsLine(): Int {
         return if (visibleGroups.isEmpty()) 0
         else getPlayersFromGroups(visibleGroups).size
     }
 
-    private fun databaseUpdate() { //create
+    /** Update the scoreboard on the database. */
+    private fun databaseUpdate() {
         updateScoreboardDatabase(toModel())
     }
 
+    /** Transform the scoreboard on the database model. */
     private fun toModel(): ScoreboardModel {
         return ScoreboardModel(name, display, header, template, footer, color, visibleGroups)
     }
 
+    /** clear the scoreboards of all players in the players list. */
     fun shutdown() {
         players.forEach { it.scoreboard = Bukkit.getScoreboardManager().newScoreboard }
     }
 
+    /** Stops the scoreboard and delete it from the database. */
     fun delete() {
         shutdown()
         players.clear()
@@ -318,14 +377,11 @@ class ScoreboardM(val name: String, private var display: String, private var hea
         deleteScoreboardDatabase(toModel())
     }
 
-    fun contains(player: Player): Boolean {
-        return players.contains(player)
-    }
-
     // managers - end
 // -------------------
     // task - start
 
+    /** Run the self update scoreboard task. */
     private fun runTask() {
         val time = (if (sf.config.contains("priority-time.$name")) sf.config.getLong("priority-time.$name") else 20) * 20
 
@@ -336,11 +392,17 @@ class ScoreboardM(val name: String, private var display: String, private var hea
         }.runTaskTimer(plugin, 0, time)
     }
 
-    private fun cancelTask() {
+    /** Cancel the self update scoreboard task */
+    fun cancelTask() {
         if (players.isEmpty() && isntDefault && task != null)
             task!!.cancel()
     }
 
+    /**
+     * @param minutes Time in minutes of the break.
+     * @return If it has a task running.
+     * Pause the self update scoreboard task for N minutes
+     */
     fun pauseTask(minutes: Int = 1): Boolean {
         return if (task != null) {
             task!!.cancel()

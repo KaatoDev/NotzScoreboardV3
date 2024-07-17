@@ -16,6 +16,7 @@ import dev.kaato.manager.ScoreboardManager.setColor
 import dev.kaato.manager.ScoreboardManager.setDisplay
 import dev.kaato.manager.ScoreboardManager.setTemplate
 import dev.kaato.manager.ScoreboardManager.update
+import dev.kaato.manager.ScoreboardManager.updateAllScoreboards
 import dev.kaato.manager.ScoreboardManager.viewScoreboard
 import notzapi.utils.MessageU.send
 import notzapi.utils.MessageU.sendHeader
@@ -44,33 +45,41 @@ class NScoreboardC : TabExecutor {
 
         when (a!!.size) {
             1 ->  if (scoreboard == null) when (a[0]) {
-                "list" -> {
-                    sendHeader(p, scoreboards.values.joinToString(separator = "&r\n", prefix = "", postfix = "") { "${it.name}&e: &f${it.getDisplay()}" })
-                }
+                "list" -> sendHeader(p, "&6⧽ &eScoreboards:\n" +
+                        scoreboards.values.mapIndexed { index, it ->
+                            val str = if (scoreboards.size == 1) "⎜"
+                            else if (index == 0) "⎧"
+                            else if (index == scoreboards.size-1) "⎩"
+                            else "⎜"
+                            "&e$str ${it.name}&e: &f${it.getDisplay()}\n"
+                        })
 
                 "players" -> seePlayers(p)
 
                 "reload" -> {
                     update()
-                    send(p, "&aPlugin reiniciado.")
+                    send(p, "reload")
                 }
+
+                "update" -> updateAllScoreboards(p)
+
                 else -> help(p)
             } else help(p, scoreboard)
 
             2 -> if (scoreboard != null) when (a[1]) {
                 "clearheader" -> {
                     setTemplate(scoreboard, "")
-                    send(p, "&eA header da &fscoreboard ${display(scoreboard)}&e foi resetada!")
+                    send(p, "clearHeader", display(scoreboard))
                 }
 
                 "clearfooter" -> {
                     setTemplate(scoreboard, footer = "")
-                    send(p, "&eA footer da &fscoreboard ${display(scoreboard)}&e foi resetada!")
+                    send(p, "clearFooter", display(scoreboard))
                 }
 
                 "cleartemplate" -> {
                     setTemplate(scoreboard, template = "")
-                    send(p, "&eO template da &fscoreboard ${display(scoreboard)}&e foi resetado!")
+                    send(p, "clearTemplate", display(scoreboard))
                 }
 
                 "pause" -> pauseScoreboard(p, scoreboard)
@@ -87,15 +96,15 @@ class NScoreboardC : TabExecutor {
 
                     if (isDeleted != null) {
                         if (isDeleted)
-                            send(p, "&eA &fscoreboard ${a[1]}&e foi &cdeletada&e com &asucesso&e!")
-                        else send(p, "&cA scoreboard inserida não existe!")
+                            send(p, "delete1", a[1])
+                        else send(p, "delete2")
 
-                    } else send(p, "&eA scoreboard ${scoreboards[a[1]]!!.getDisplay()}&e está setada como padrão e por isso &cnão pode ser deletada&e!")
+                    } else send(p, "delete3")
                 }
 
                 "reset" -> if (Bukkit.getPlayerExact(a[1]) != null)
                     resetPlayer(p, Bukkit.getPlayerExact(a[1]))
-                else send(p, "&cO player inserido não existe ou está offline.")
+                else send(p, "reset")
 
                 else -> help(p)
             }
@@ -103,35 +112,35 @@ class NScoreboardC : TabExecutor {
             3 -> if (a[0] == "create") {
                 if (!blacklist.contains(a[1])) {
                     if (!createScoreboard(a[1], args[2], p))
-                        send(p, "&cA &fscoreboard ${a[1]}&c já existe!")
-                } else send(p, "&cUtilize outro nome para a scoreboard!")
+                        send(p, "create1")
+                } else send(p, "create2")
 
             } else if (scoreboard != null) when (a[1]) {
                 "addplayer" -> if (Bukkit.getPlayerExact(a[2]) != null)
                     addPlayerTo(p, Bukkit.getPlayerExact(a[2]), scoreboard)
-                else send(p, "&cO player inserido não existe ou está offline.")
+                else send(p, "addplayer")
 
                 "addgroup" -> if (scoreboards.containsKey(a[2]))
                     addGroupTo(p, scoreboard, a[2])
-                else send(p, "&cO grupo inserido não existe.")
+                else send(p, "addgroup")
 
                 "pause" -> try {
                     pauseScoreboard(p, scoreboard, a[2].toInt())
                 } catch (e: ParseException) {
-                    send(p, "&cUtilize apenas números no argumento!")
+                    send(p, "pause")
                 }
 
                 "remplayer" -> if (Bukkit.getPlayerExact(a[2]) != null)
                     remPlayerFrom(p, Bukkit.getPlayerExact(a[2]), scoreboard)
-                else send(p, "&cO player inserido não existe ou está offline.")
+                else send(p, "remplayer")
 
                 "remgroup" -> if (scoreboards.containsKey(a[2]))
                     remGroupFrom(p, scoreboard, a[2])
-                else send(p, "&cO grupo inserido não existe.")
+                else send(p, "remgroup")
 
                 "setcolor" -> if (a[2].length == 2 && a[2].matches(Regex("&[a-f0-9]")))
                     setColor(p, scoreboard, a[2])
-                else send(p, "&cUtilize um formato válido de cor. &7(/cores)")
+                else send(p, "setcolor")
 
                 "setdisplay" -> setDisplay(p, scoreboard, args[2])
 
@@ -147,10 +156,10 @@ class NScoreboardC : TabExecutor {
                 if (!blacklist.contains(a[1])) {
                     if (createScoreboard(a[1], args[2], p)) {
                         setTemplate(a[1], if (a[3] != "null") a[3] else null)
-                        send(p, "&eAs templates da crate foram devidamente setadas!")
+                        send(p, "template")
 
-                    } else send(p, "&cA &fscoreboard ${a[1]}&c já existe!")
-                } else send(p, "&cUtilize outro nome para a scoreboard!")
+                    } else send(p, "create1", a[1])
+                } else send(p, "create2")
             }
 
             5 -> if (a[0] == "create") {
@@ -160,10 +169,10 @@ class NScoreboardC : TabExecutor {
                         val template = if (a[4] != "null") a[4] else null
 
                         setTemplate(a[1], header, template)
-                        send(p, "&eAs templates da crate foram devidamente setadas!")
+                        send(p, "template")
 
-                    } else send(p, "&cA &fscoreboard ${a[1]}&c já existe!")
-                } else send(p, "&cUtilize outro nome para a scoreboard!")
+                    } else send(p, "create1", a[1])
+                } else send(p, "create2")
             }
 
             6 -> if (a[0] == "create") {
@@ -174,10 +183,10 @@ class NScoreboardC : TabExecutor {
                         val footer = if (a[5] != "null") a[5] else null
 
                         setTemplate(a[1], header, template, footer)
-                        send(p, "&eAs templates da crate foram devidamente setadas!")
+                        send(p, "template")
 
-                    } else send(p, "&cA &fscoreboard ${a[1]}&c já existe!")
-                } else send(p, "&cUtilize outro nome para a scoreboard!")
+                    } else send(p, "create1", a[1])
+                } else send(p, "create2")
             }
 
             else -> help(p, scoreboard)
@@ -194,6 +203,12 @@ class NScoreboardC : TabExecutor {
         return Collections.emptyList()
     }
 
+    /**
+     * @param p Player.
+     * @param scoreboard Scoreboard.
+     *
+     * Send the commands' instructions for the player.
+     */
     private fun help(p: Player, scoreboard: String? = null) {
         if (scoreboard == null)
             sendHeader(p, """
@@ -205,6 +220,7 @@ class NScoreboardC : TabExecutor {
                 &7+ &ereload &7- Recarrega partes o plugin.
                 &7+ &ereset &f<&eplayer&f> &7- Reseta a scoreboard do player para a scoreboard padrão.
                 &7+ &eset &f<&escoreboard&f> &7- Seta a própria scoreboard.
+                &7+ &eupdate &7- Atualiza todas as scoreboards.
             """.trimIndent())
 
         else sendHeader(p, """
