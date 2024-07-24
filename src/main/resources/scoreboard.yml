@@ -1,0 +1,100 @@
+# The 'player' group is set by default, edit the template, header and footer for it.
+# If there is no atribute set in the 'scoreboard' area for a group, it will be set the default (player).
+
+# `{clan} `- Nome do clan. (Simpleclans)
+# `{clan_tag}` - Tag do clan. (Simpleclans)
+# `{clankdr}` - KDR do clan. (Simpleclans)
+# `{money}` - Dinheiro do player direto do Vault.
+# `{player_name}` - Nome do player.
+# `{player_displayname}` - Displayname do player.
+# `{ping} `- Ping do player.
+# `{rank} `- (yRanks do yPlugins) Ele utiliza a tag como cor e depois o nome.
+# `{status_rankup}` - (yRanks do yPlugins) Ele utiliza a tag como cor e depois o status.
+# `{tps} - `TPS do servidor.
+# `{staff}` - Pega o nick de um dos players online dos grupos visíveis daquele grupo.
+# `{supstaff}` - Mesma coisa que o {staff}, porém retorna uma mensagem alternativa caso o player esteja offline
+# `{staff_list}` - Quantidade de players online nos grupos visíveis daquele grupo.
+# `{staff_list}` - Quantidade de players online nos grupos visíveis daquele grupo.
+# `{staff_'group'}` - Pega um dos players daquele grupo.
+# `{'group'_list}` - Pega a quantidade de player online naquele grupo.
+
+title: '&7-[ &f&lRede &5&lNotz &7]-'
+
+placeholders: # All words included here will need to be replaced with {} around to be used.
+  - nsb: "notzscoreboard"
+
+default-group: 'player'
+priority-time: # in seconds | default is 20 seconds
+  diretor: 1
+  gerente: 1
+  player: 5
+
+# This plugin use Teams on scoreboard, what means that when a line has
+# a placeholder (% or {}), the code of the plugin separates the line
+# between prefix (before placeholder) and suffix (placeholder).
+# The prefix max length is 38 and the suffix is 16.
+# This makes the scoreboard more efficient and the line flexible.
+# To keep a line with placeholder static, use # in the start of the line.
+templates:
+  - player:
+      - ''
+      - '&6⧽&f {player_displayname}'
+      - ''
+      - '&9⎧ {rank}'
+      - '&9⎩ %ezrankspro_rankprefix%{status_rankup}'
+      - ''
+      - '&2⎧ &aMoney&f: {money}'
+      - '&2⎩ &aCash&f: {cash}'
+      - ''
+      - '&5⎧ &dClan&f: %simpleclans_tag_label%'
+      - '&5⎩ &dKDR&f: %simpleclans_clan_total_kdr%'
+  - staff:
+      - ''
+      - '⎧ &6Staffs online&f: {staff_list}'
+      - '⎩ - &f{staff}'
+  - modstaff:
+      - ''
+      - '⎧ &6Superiores online&f: {staff_list}'
+      - '⎩ - &f{supstaff}'
+  - supstaff:
+      - ''
+      - '&6⧽ {player_displayname}'
+      - '&6Players online&f: {player_list}'
+      - ''
+      - '&2⎧ &aTps&f: {tps}'
+      - '&2⎩ &aPing&f: {ping}'
+  - admin:
+      - ''
+      - '⎧ &eAjudantes online&f: {ajudante_list}'
+      - '⎜ &e- &f{staff_ajudante}'
+      - '⎜ &dTrials online&f: {trial_list}'
+      - '⎜ &d- &f{staff_trial}'
+      - '⎜ &2Mods online&f: {moderador_list}'
+      - '⎜ &2- &f{staff_moderador}'
+      - '⎜ &6Superiores online&f: {staff_list}'
+      - '⎩ &4- &f{staff}'
+  - gerente:
+      - ''
+      - '⎧ &cAdmins online&f: {admin_list}'
+      - '⎜ &c- &f{staff_admin}'
+      - '⎩ &6Staffs online&f: {staff_list}'
+  - diretor:
+      - ''
+      - '⎧ &eAjudantes&f: {ajudante_list}'
+      - '⎜ &dTrials&f: {trial_list}'
+      - '⎜ &2Moderadores&f: {moderador_list}'
+      - '⎜ &cAdmins&f: {admin_list}'
+      - '⎜ &4Gerentes&f: {gerente_list}'
+      - '⎩ &6Staffs online&f: {staff_list}'
+
+
+staff-status: ## Set "staff-status" on the scoreboard footer to use this feature. If the group has player online in one of the VisibleGroups, it will use te online, otherwise it will use the offline.
+  online:
+    - ''
+    - '&e⎧ Caso precise de ajuda'
+    - '&e⎜ chame um &lstaff&e:'
+    - '&e⎩ -&r {staff}'
+  offline:
+    - ''
+    - '&e⎧ &eTem dúvidas?'
+    - '&e⎩ Utilize /&fticket'
