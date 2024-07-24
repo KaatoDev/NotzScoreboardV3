@@ -36,16 +36,16 @@ Você pode optar por utilizar as placeholders dinâmicas de outros plugins atrav
 <br/>
 
 ## Placeholders
- - `{clan} `- Nome do clan. (Simpleclans) [PlaceholderAPI]
+ - `{clan}` - Nome do clan. (Simpleclans) [PlaceholderAPI]
  - `{clan_tag}` - Tag do clan. (Simpleclans) [PlaceholderAPI]
  - `{clankdr}` - KDR do clan. (Simpleclans) [PlaceholderAPI]
  - `{money}` - Dinheiro do player direto do Vault. [PlaceholderAPI]
  - `{player_name}` - Nome do player.
  - `{player_displayname}` - Displayname do player.
- - `{ping} `- Ping do player.
- - `{rank} `- (yRanks do yPlugins) Ele utiliza a tag como cor e depois o nome. [PlaceholderAPI]
+ - `{ping}` - Ping do player.
+ - `{rank}` - (yRanks do yPlugins) Ele utiliza a tag como cor e depois o nome. [PlaceholderAPI]
  - `{status_rankup}` - (yRanks do yPlugins) Ele utiliza a tag como cor e depois o status. [PlaceholderAPI]
- - `{tps} - `TPS do servidor. [PlaceholderAPI]
+ - `{tps}` - TPS do servidor. [PlaceholderAPI]
 
  - `{staff}` - Pega o nick de um dos players online dos grupos visíveis daquele grupo. - Quantidade de players online nos grupos visíveis daquele grupo.
  - `{supstaff}` - Mesma coisa que o {staff}, porém retorna uma mensagem alternativa caso o player esteja offline
