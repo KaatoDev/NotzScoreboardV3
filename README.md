@@ -4,6 +4,8 @@
 #
 O NotzScoreboardV3 é um plugin de Scoreboard completo e totalmente personalizável que conta com suporte a mútiplas scoreboards simutâneas, placeholders próprias e PlaceholderAPI, database via MySQL ou SQLite e atualização dinâmica para maior eficiência.
 
+<br/>
+
 ## Informações
 
 ### `Scoreboards`
@@ -19,13 +21,19 @@ Possui também um sistema de templates que podem ser criados no arquivo de confi
 ### Placeholders
 Você pode optar por utilizar as placeholders dinâmicas de outros plugins através do PlaceholderAPI ou placeholders estáticas próprias que podem ser criadas atravé do arquivo de configuração do plugin.
 
+<br/>
+
+## Scoreboard Demo
+![player v3](https://github.com/user-attachments/assets/33363177-049a-4e31-938b-29ff63b6f173)
+
 </div>
+
+<br/>
 
 ## Dependências
 - PlaceholderAPI
 
-## Scoreboard Demo
-![player v3](https://github.com/user-attachments/assets/33363177-049a-4e31-938b-29ff63b6f173)
+<br/>
 
 ## Placeholders
  - `{clan} `- Nome do clan. (Simpleclans) [PlaceholderAPI]
@@ -45,9 +53,12 @@ Você pode optar por utilizar as placeholders dinâmicas de outros plugins atrav
  - `{staff_'group'}` - Pega um dos players daquele grupo.
  - `{'group'_list}` - Pega a quantidade de player online naquele grupo.
 
-## Permissões
+<br/>
 
+## Permissões
 - `notzscoreboard.admin` - Habilita o player a utilizar o comando de admin /notzsb.
+
+<br/>
 
 ## Commandos
 ### `/notzsb`
@@ -76,7 +87,7 @@ Você pode optar por utilizar as placeholders dinâmicas de outros plugins atrav
    - `view` - Visualiza a scoreboard sem precisar setar.
    - `visiblegroups` - Vê os grupos visíveis inseridos no grupo.
 <br/>
-<sub> | <> argumento obrigatório. | () argumento opcional. | </sub>
+<sub> | <> argumento obrigatório. | ( ) argumento opcional. | </sub>
 
 #
 
