@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'Kaa'
-version = '0.4'
+version = '3.0'
 
 repositories {
     mavenCentral()
@@ -54,13 +54,11 @@ processResources {
 }
 
 jar {
-    archiveFileName = "NotzScoreboardV3-${project.version}.jar" // Replace with your desired jar name
     destinationDirectory.set(file('E:/Gago32/Minecraft/Servidor/Rede Notz/plugins'))
 }
 
 shadowJar {
     archiveClassifier.set('')
-    archiveFileName = "NotzScoreboardV3-${project.version}.jar" // Replace with your desired jar name
     destinationDirectory.set(file('E:/Gago32/Minecraft/Servidor/Rede Notz/plugins'))
     from(sourceSets.main.output)
     configurations = [project.configurations.runtimeClasspath]

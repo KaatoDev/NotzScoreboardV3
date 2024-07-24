@@ -283,6 +283,16 @@ object ScoreboardManager {
                 "{clan}" to { p: Any? ->
                     var clan = "&7Sem clan."
 
+                    if (p != null && Bukkit.getServer().pluginManager.getPlugin("simpleclans") != null && PlaceholderAPI.setPlaceholders(p as Player, "%simpleclans_clan_name%").isNotEmpty()) {
+                        val pa = PlaceholderAPI.setPlaceholders(p, "%simpleclans_clan_name%")
+                        clan = c(pa)
+                    }
+                    clan
+                },
+
+                "{clan_tag}" to { p: Any? ->
+                    var clan = "&7Sem clan."
+
                     if (p != null && Bukkit.getServer().pluginManager.getPlugin("simpleclans") != null && PlaceholderAPI.setPlaceholders(p as Player, "%simpleclans_tag_label%").isNotEmpty()) {
                         val pa = PlaceholderAPI.setPlaceholders(p, "%simpleclans_tag_label%")
                         clan = c(pa.substring(4, pa.length - 5))
