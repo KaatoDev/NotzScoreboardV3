@@ -15,10 +15,12 @@ import dev.kaato.manager.ScoreboardManager.scoreboards
 import dev.kaato.manager.ScoreboardManager.setColor
 import dev.kaato.manager.ScoreboardManager.setDisplay
 import dev.kaato.manager.ScoreboardManager.setTemplate
-import dev.kaato.manager.ScoreboardManager.update
+import dev.kaato.manager.ScoreboardManager.reload
+import dev.kaato.manager.ScoreboardManager.seeVisibleGroups
 import dev.kaato.manager.ScoreboardManager.updateAllScoreboards
 import dev.kaato.manager.ScoreboardManager.viewScoreboard
 import notzapi.utils.MessageU.getMessage
+import notzapi.utils.MessageU.join
 import notzapi.utils.MessageU.send
 import notzapi.utils.MessageU.sendHeader
 import notzapi.utils.OthersU.isntAdmin
@@ -47,18 +49,18 @@ class NScoreboardC : TabExecutor {
         when (a!!.size) {
             1 ->  if (scoreboard == null) when (a[0]) {
                 "list" -> sendHeader(p, "&6⧽ &eScoreboards:\n" +
-                        scoreboards.values.mapIndexed { index, it ->
-                            val str = if (scoreboards.size == 1) "⎜"
+                        join(scoreboards.values.mapIndexed { index, it ->
+                            val str = if (scoreboards.size == 1) "⧽"
                             else if (index == 0) "⎧"
                             else if (index == scoreboards.size-1) "⎩"
                             else "⎜"
-                            "&e$str ${it.name}&e: &f${it.getDisplay()}\n"
-                        })
+                            "&e$str &f${it.name}&e: &f${it.getDisplay()}\n"
+                        }, separator = ""))
 
                 "players" -> seePlayers(p)
 
                 "reload" -> {
-                    update()
+                    reload()
                     send(p, "reload")
                 }
 
@@ -89,6 +91,8 @@ class NScoreboardC : TabExecutor {
 
                 "view" -> viewScoreboard(p, scoreboard)
 
+                "visiblegroups" -> seeVisibleGroups(p, scoreboard)
+
                 else -> help(p, scoreboard)
 
             } else when (a[0]) {
@@ -106,6 +110,11 @@ class NScoreboardC : TabExecutor {
                 "reset" -> if (Bukkit.getPlayerExact(a[1]) != null)
                     resetPlayer(p, Bukkit.getPlayerExact(a[1]))
                 else send(p, "reset")
+
+                "set" -> if (scoreboards.containsKey(a[1]))
+                    addPlayerTo(p, p, a[1])
+
+                else send(p, "&cEsta scoreboard não existe!")
 
                 else -> help(p)
             }
@@ -220,7 +229,7 @@ class NScoreboardC : TabExecutor {
                 &7+ &eplayers &7- ${getMessage("commands.players")}
                 &7+ &ereload &7- ${getMessage("commands.reload")}
                 &7+ &ereset &f<&eplayer&f> &7- ${getMessage("commands.reset")}
-                &7+ &eset &f<&escoreboard&f> &7- ${getMessage("setcommands.:")}
+                &7+ &eset &f<&escoreboard&f> &7- ${getMessage("commands.set")}
                 &7+ &eupdate &7- ${getMessage("commands.update")}
             """.trimIndent())
 
@@ -241,6 +250,7 @@ class NScoreboardC : TabExecutor {
             &7+ &esetfooter &f<&etemplate&f> &7- ${getMessage("commands.scoreboard.setfooter")}
             &7+ &esettemplate &f<&etemplate&f> &7- ${getMessage("commands.scoreboard.settemplate")}
             &7+ &eview &7- ${getMessage("commands.scoreboard.view")}
+            &7+ &evisiblegroups &7- ${getMessage("commands.scoreboard.visiblegroups")}
         """.trimIndent())
     }
 }

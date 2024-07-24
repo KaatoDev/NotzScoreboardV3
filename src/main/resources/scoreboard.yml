@@ -18,6 +18,8 @@
 # `{staff_'group'}` - Pega um dos players daquele grupo.
 # `{'group'_list}` - Pega a quantidade de player online naquele grupo.
 
+title: '&7-[ &f&lRede &5&lNotz &7]-'
+
 placeholders: # All words included here will need to be replaced with {} around to be used.
   - nsb: "notzscoreboard"
 
@@ -36,7 +38,7 @@ priority-time: # in seconds | default is 20 seconds
 templates:
   - player:
       - ''
-      - '&6⧽ {player_displayname}'
+      - '&6⧽&f {player_displayname}'
       - ''
       - '&9⎧ {rank}'
       - '&9⎩ %ezrankspro_rankprefix%{status_rankup}'

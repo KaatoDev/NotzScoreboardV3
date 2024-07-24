@@ -53,8 +53,15 @@ processResources {
     }
 }
 
+jar {
+    archiveFileName = "NotzScoreboardV3-${project.version}.jar" // Replace with your desired jar name
+    destinationDirectory.set(file('E:/Gago32/Minecraft/Servidor/Rede Notz/plugins'))
+}
+
 shadowJar {
     archiveClassifier.set('')
+    archiveFileName = "NotzScoreboardV3-${project.version}.jar" // Replace with your desired jar name
+    destinationDirectory.set(file('E:/Gago32/Minecraft/Servidor/Rede Notz/plugins'))
     from(sourceSets.main.output)
     configurations = [project.configurations.runtimeClasspath]
     relocate('notzapi', 'notzScoreboardV2.shadow.notzapi') // Prevent classpath conflicts

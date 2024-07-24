@@ -9,9 +9,11 @@ import dev.kaato.manager.PlayerManager.loadPlayers
 import dev.kaato.manager.PlayerManager.players
 import me.clip.placeholderapi.PlaceholderAPI
 import notzapi.NotzAPI.Companion.placeholderManager
+import notzapi.NotzAPI.Companion.plugin
 import notzapi.utils.MessageU.c
 import notzapi.utils.MessageU.join
 import notzapi.utils.MessageU.send
+import notzapi.utils.MessageU.sendHeader
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.scheduler.BukkitTask
@@ -68,7 +70,7 @@ object ScoreboardManager {
     fun pauseScoreboard(player: Player, scoreboard: String, minutes: Int = 1) {
         if (scoreboards.contains(scoreboard)) {
             scoreboards[scoreboard]!!.pauseTask(minutes)
-            send(player, "pauseScoreboard1", listOf(display(scoreboard), minutes.toString(), if (minutes>1) "s" else ""))
+            send(player, "pauseScoreboard1", defaults = listOf(display(scoreboard), minutes.toString(), if (minutes>1) "s" else ""))
 
         } else send(player, "pauseScoreboard2")
     }
@@ -77,9 +79,11 @@ object ScoreboardManager {
         val score = scoreboards[scoreboard]!!
 
         if (score.addPlayer(player)) {
-            send(sender, "addPlayerTo1", listOf(score.getDisplay(), player.name))
-
+            send(sender, "addPlayerTo1" , defaults = listOf(score.getDisplay(), player.name))
             checkPlayer(player, score)
+
+            if (scoreboards[default_group]!!.getVisibleGroups().contains(scoreboard))
+                scoreboards[default_group]!!.update()
 
         } else send(sender, "addPlayerTo2", player.name)
     }
@@ -88,26 +92,26 @@ object ScoreboardManager {
         val score = scoreboards[scoreboard]!!
 
         if (score.remPlayer(player)) {
-            send(sender, "remPlayerFrom1", listOf(score.getDisplay(), player.name))
+            send(sender, "remPlayerFrom1" , defaults = listOf(score.getDisplay(), player.name))
             checkPlayer(player, isDefault = score.isDefault())
 
-        } else send(sender, "remPlayerFrom2", listOf(player.name, if (players.containsKey(player.name)) players[player.name]!! else default_group))
+        } else send(sender, "remPlayerFrom2" , defaults = listOf(player.name, if (players.containsKey(player.name)) players[player.name]!! else default_group))
     }
 
     fun addGroupTo(player: Player, scoreboard: String, group: String) {
         val score = scoreboards[scoreboard]!!
 
         if (score.addGroup(group))
-            send(player, "addGroupTo1", listOf(display(group), score.getDisplay()))
-        else send(player, "addGroupTo2", listOf(display(group), score.getDisplay()))
+            send(player, "addGroupTo1" , defaults = listOf(display(group), score.getDisplay()))
+        else send(player, "addGroupTo2" , defaults = listOf(display(group), score.getDisplay()))
     }
 
     fun remGroupFrom(player: Player, scoreboard: String, group: String) {
         val score = scoreboards[scoreboard]!!
 
         if (score.remGroup(group))
-            send(player, "remGroupFrom1", listOf(display(group), score.getDisplay()))
-        else send(player, "remGroupFrom2", listOf(display(group), score.getDisplay()))
+            send(player, "remGroupFrom1" , defaults = listOf(display(group), score.getDisplay()))
+        else send(player, "remGroupFrom2" , defaults = listOf(display(group), score.getDisplay()))
     }
 
     fun setDisplay(player: Player, scoreboard: String, display: String) {
@@ -116,7 +120,7 @@ object ScoreboardManager {
 
         if (display == temp) {
             score.setDisplay(display)
-            send(player, "setDisplay1", listOf(scoreboard, temp , display))
+            send(player, "setDisplay1" , defaults = listOf(scoreboard, temp , display))
 
         } else send(player, "setDisplay2", scoreboard)
     }
@@ -130,20 +134,20 @@ object ScoreboardManager {
 
         if (header != null) {
             if (header != score.getHeader())
-                send(player, "setTemplate1", listOf("header", score.getDisplay(), score.getHeader(), header))
-            else send(player, "setTemplate2", listOf("header", score.getDisplay()))
+                send(player, "setTemplate1" , defaults = listOf("header", score.getDisplay(), score.getHeader(), header))
+            else send(player, "setTemplate2" , defaults = listOf("header", score.getDisplay()))
         }
 
         if (template != null) {
             if (template != score.getTemplate())
-                send(player, "setTemplate1", listOf("template", score.getDisplay(), score.getTemplate(), template))
-            else send(player, "setTemplate2", listOf("template", score.getDisplay()))
+                send(player, "setTemplate1" , defaults = listOf("template", score.getDisplay(), score.getTemplate(), template))
+            else send(player, "setTemplate2" , defaults = listOf("template", score.getDisplay()))
         }
 
         if (footer != null) {
             if (footer != score.getFooter())
-                send(player, "setTemplate1", listOf("footer", score.getDisplay(), score.getFooter(), footer))
-            else send(player, "setTemplate2", listOf("footer", score.getDisplay()))
+                send(player, "setTemplate1" , defaults = listOf("footer", score.getDisplay(), score.getFooter(), footer))
+            else send(player, "setTemplate2" , defaults = listOf("footer", score.getDisplay()))
         }
 
         if (header == null && template == null && footer == null)
@@ -158,7 +162,7 @@ object ScoreboardManager {
 
         if (color != temp) {
             score.setColor(color)
-            send(player, "setColor1", listOf(display(scoreboard), join(temp.map { temp+it })/*"$temp${temp[0]}$temp${temp[1]}"*/, join(color.map { color+it })/*"$color${color[0]}$color${color[1]}"*/))
+            send(player, "setColor1" , defaults = listOf(display(scoreboard), join(temp.map { temp+it })/*"$temp${temp[0]}$temp${temp[1]}"*/, join(color.map { color+it })/*"$color${color[0]}$color${color[1]}"*/))
         } else send(player, "setColor2", score.getDisplay())
 
     }
@@ -167,13 +171,19 @@ object ScoreboardManager {
         return scoreboards[scoreboard]!!.getDisplay()
     }
 
+    fun seeVisibleGroups(player: Player, scoreboard: String = "") {
+        sendHeader(player, join(scoreboards[scoreboard]!!.getVisibleGroups(), prefix = "&e ⧽ &f$scoreboard&e: &f", separator = "&e, &f") {
+            if (it == scoreboard) "&a$it" else it
+        })
+    }
+
     // scoreboard - end
 // -------------------
     // geral - start
 
-    fun update() {
-        shutdown()
-        load()
+    fun reload() {
+        plugin.pluginLoader.disablePlugin(plugin)
+        plugin.pluginLoader.enablePlugin(plugin)
     }
 
     fun updateAllScoreboards(p: Player) {
@@ -209,9 +219,8 @@ object ScoreboardManager {
 
     fun shutdown() {
         scoreboards.values.forEach {
-            it.pauseTask()
+            it.forceCancelTask()
             it.shutdown()
-            it.cancelTask()
         }
     }
 
@@ -220,6 +229,8 @@ object ScoreboardManager {
     // loaders - start
 
     fun load() {
+        loadPlaceholders()
+
         val templatesConfig = sf.config.getMapList("templates")
         default_group = sf.config.getString("default-group")
         arrayOf("low", "medium", "high").forEach { priorityList[it] = PriorityClass(null, sf.config.getLong("priority-time.$it") * 20) }
@@ -236,7 +247,6 @@ object ScoreboardManager {
         staffStatus[true] = sf.config.getStringList("staff-status.online")
         staffStatus[false] = sf.config.getStringList("staff-status.offline")
 
-        loadPlaceholders()
         loadScoreboards()
     }
 
@@ -245,6 +255,8 @@ object ScoreboardManager {
 
         placeholderManager.addPlaceholders(
             hashMapOf(
+                "{title}" to { sf.config.getString("title") },
+
                 "{rank}" to { p: Any? ->
                     var rank = "&7Sem rank."
 

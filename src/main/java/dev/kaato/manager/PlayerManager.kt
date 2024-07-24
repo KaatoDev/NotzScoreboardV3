@@ -8,6 +8,7 @@ import dev.kaato.manager.DatabaseManager.updatePlayerDatabase
 import dev.kaato.manager.ScoreboardManager.checkVisibleGroupsBy
 import dev.kaato.manager.ScoreboardManager.default_group
 import dev.kaato.manager.ScoreboardManager.scoreboards
+import notzapi.utils.MessageU.join
 import notzapi.utils.MessageU.send
 import notzapi.utils.MessageU.sendHeader
 import org.bukkit.Bukkit
@@ -91,7 +92,7 @@ object PlayerManager {
 
             scores.forEach { it.getPlayers().forEach { p -> scorePlayers.add("&f${p.name}&e: &f${it.getDisplay()}") } }
 
-            sendHeader(player, scorePlayers.joinToString(separator = "\n", prefix = "", postfix = ""))
+            sendHeader(player, join(scorePlayers.toList(), separator = "\n"))
 
         } else send(player, "seePlayers")
     }

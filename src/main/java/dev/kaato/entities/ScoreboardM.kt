@@ -4,13 +4,16 @@ import dev.kaato.Main.Companion.sf
 import dev.kaato.manager.DatabaseManager.deleteScoreboardDatabase
 import dev.kaato.manager.DatabaseManager.insertScoreboardDatabase
 import dev.kaato.manager.DatabaseManager.updateScoreboardDatabase
+import dev.kaato.manager.ScoreboardManager.default_group
 import dev.kaato.manager.ScoreboardManager.getPlayerFromGroup
 import dev.kaato.manager.ScoreboardManager.getPlayersFromGroups
 import dev.kaato.manager.ScoreboardManager.getTemplate
+import dev.kaato.manager.ScoreboardManager.scoreboards
 import notzapi.NotzAPI.Companion.placeholderManager
 import notzapi.NotzAPI.Companion.plugin
 import notzapi.utils.MessageU.c
 import notzapi.utils.MessageU.getMessage
+import notzapi.utils.MessageU.send
 import notzapi.utils.MessageU.set
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
@@ -148,6 +151,7 @@ class ScoreboardM(val name: String, private var display: String, private var hea
                 runTask()
 
             players.add(player)
+            update()
             updatePlayer(player)
 
             true
@@ -180,6 +184,7 @@ class ScoreboardM(val name: String, private var display: String, private var hea
         return if (players.contains(player)) {
             players.remove(player)
             player.scoreboard = Bukkit.getScoreboardManager().newScoreboard
+            update()
             cancelTask()
 
             true
@@ -260,7 +265,7 @@ class ScoreboardM(val name: String, private var display: String, private var hea
         val scoreboard = Bukkit.getScoreboardManager().newScoreboard
         val objective = scoreboard.registerNewObjective(name, "yummy")
         objective.displaySlot = DisplaySlot.SIDEBAR
-        objective.displayName = set("{prefix}")
+        objective.displayName = set(sf.config.getString("title"))
 
         linesList.forEachIndexed { i, line ->
             val r = if (line.contains("{")) 0 else if (line.contains("%")) 1 else null
@@ -283,6 +288,9 @@ class ScoreboardM(val name: String, private var display: String, private var hea
                     suffix = suffix.replace("{supstaff}", staffLine("{supstaff}"))
                 else if (suffix.contains("{staff_list}"))
                     suffix = suffix.replace("{staff_list}", staffsLine().toString())
+
+                if (suffix.contains("{player_list}"))
+                    suffix = suffix.replace("{player_list}", scoreboards[default_group]!!.getPlayers().size.toString())
 
                 if (prefix.length > 30)
                     prefix = c("&cLine $index ")
@@ -326,6 +334,9 @@ class ScoreboardM(val name: String, private var display: String, private var hea
                     suffix = suffix.replace("{supstaff}", staffLine("{supstaff}"))
                 else if (suffix.contains("{staff_list}"))
                     suffix = suffix.replace("{staff_list}", staffsLine().toString())
+
+                if (suffix.contains("{player_list}"))
+                    suffix = suffix.replace("{player_list}", scoreboards[default_group]!!.getPlayers().size.toString())
 
                 if (prefix.length > 30)
                     prefix = c("&cLine $index ")
@@ -397,6 +408,16 @@ class ScoreboardM(val name: String, private var display: String, private var hea
     fun cancelTask() {
         if (players.isEmpty() && isntDefault && task != null)
             task!!.cancel()
+    }
+
+    fun forceCancelTask() {
+        try {
+            task?.cancel()
+            send(Bukkit.getConsoleSender(), "&a&lCancelamento à força da task da &bscoreboard &l${name} &f(${display}&f) &a&lrealizado!!!")
+        } catch (e: Exception) {
+            send(Bukkit.getConsoleSender(), "&c&lFalha ao forçar cancelamento da task da &bscoreboard &l${name} &f(${display}&f)&c&l!!!")
+            throw e
+        }
     }
 
     /**
