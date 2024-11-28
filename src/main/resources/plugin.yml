@@ -1,6 +1,6 @@
 name: NotzScoreboard
-version: 3.0
-main: dev.kaato.Main
+version: 3.1
+main: dev.kaato.notzscoreboard.Main
 
 commands:
   nscoreboard:
