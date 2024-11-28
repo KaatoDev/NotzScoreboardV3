@@ -1,14 +1,14 @@
-package dev.kaato.entities
+package dev.kaato.notzscoreboard.entities
 
-import dev.kaato.Main.Companion.sf
-import dev.kaato.manager.DatabaseManager.deleteScoreboardDatabase
-import dev.kaato.manager.DatabaseManager.insertScoreboardDatabase
-import dev.kaato.manager.DatabaseManager.updateScoreboardDatabase
-import dev.kaato.manager.ScoreboardManager.default_group
-import dev.kaato.manager.ScoreboardManager.getPlayerFromGroup
-import dev.kaato.manager.ScoreboardManager.getPlayersFromGroups
-import dev.kaato.manager.ScoreboardManager.getTemplate
-import dev.kaato.manager.ScoreboardManager.scoreboards
+import dev.kaato.notzscoreboard.Main
+import dev.kaato.notzscoreboard.manager.DatabaseManager.deleteScoreboardDatabase
+import dev.kaato.notzscoreboard.manager.DatabaseManager.insertScoreboardDatabase
+import dev.kaato.notzscoreboard.manager.DatabaseManager.updateScoreboardDatabase
+import dev.kaato.notzscoreboard.manager.ScoreboardManager
+import dev.kaato.notzscoreboard.manager.ScoreboardManager.default_group
+import dev.kaato.notzscoreboard.manager.ScoreboardManager.getPlayerFromGroup
+import dev.kaato.notzscoreboard.manager.ScoreboardManager.getPlayersFromGroups
+import dev.kaato.notzscoreboard.manager.ScoreboardManager.scoreboards
 import notzapi.NotzAPI.Companion.placeholderManager
 import notzapi.NotzAPI.Companion.plugin
 import notzapi.utils.MessageU.c
@@ -20,7 +20,6 @@ import org.bukkit.entity.Player
 import org.bukkit.scheduler.BukkitRunnable
 import org.bukkit.scheduler.BukkitTask
 import org.bukkit.scoreboard.DisplaySlot
-import java.io.Serializable
 import kotlin.random.Random
 
 /**
@@ -33,12 +32,10 @@ import kotlin.random.Random
  * @param visibleGroups List of scoreboard groups that's used for the {staff} placeholder.
  */
 class ScoreboardM(val name: String, private var display: String, private var header: String, private var template: String, private var footer: String, private var color: String, private val visibleGroups: MutableList<String>) {
-    data class ScoreboardModel(val name: String, val display: String, val header: String, val template: String, val footer: String, val color: String, val visibleGroups: MutableList<String>) : Serializable
-
     /**
-    * @param name Unique name to be used in commands.
-    * @param display Displayname that will appear on messages.
-    */
+     * @param name Unique name to be used in commands.
+     * @param display Displayname that will appear on messages.
+     */
     constructor(name: String, display: String) : this(name, display, "", "player", "staff-status", "&e", mutableListOf()) {
         insertScoreboardDatabase(toModel())
     }
@@ -236,9 +233,9 @@ class ScoreboardM(val name: String, private var display: String, private var hea
         if (linesList.isNotEmpty())
             linesList.clear()
 
-        if (header.isNotBlank()) linesList.addAll(getTemplate(header))
-        if (template.isNotBlank()) linesList.addAll(getTemplate(template))
-        if (footer.isNotBlank()) linesList.addAll(getTemplate(footer, visibleGroups))
+        if (header.isNotBlank()) linesList.addAll(ScoreboardManager.getTemplate(header))
+        if (template.isNotBlank()) linesList.addAll(ScoreboardManager.getTemplate(template))
+        if (footer.isNotBlank()) linesList.addAll(ScoreboardManager.getTemplate(footer, visibleGroups))
 
         var blanks = ""
 
@@ -252,7 +249,7 @@ class ScoreboardM(val name: String, private var display: String, private var hea
         }.toMutableList()
 
         updatePlaceholder()
-        shutdown()
+        shutdownSB()
         updatePlayers()
     }
 
@@ -265,12 +262,12 @@ class ScoreboardM(val name: String, private var display: String, private var hea
         val scoreboard = Bukkit.getScoreboardManager().newScoreboard
         val objective = scoreboard.registerNewObjective(name, "yummy")
         objective.displaySlot = DisplaySlot.SIDEBAR
-        objective.displayName = set(sf.config.getString("title"))
+        objective.displayName = set(Main.Companion.sf.config.getString("title"))
 
         linesList.forEachIndexed { i, line ->
             val r = if (line.contains("{")) 0 else if (line.contains("%")) 1 else null
             var l = c(line)
-            val index = linesList.size - i -1
+            val index = linesList.size - i - 1
 
             if (line.contains("#"))
                 l = l.replaceFirst("#", "")
@@ -304,10 +301,8 @@ class ScoreboardM(val name: String, private var display: String, private var hea
 
             } else if (l.length > 38)
                 objective.getScore(c("&cLine $index is too large")).score = index
-
             else if (l.length > 2 && l[2] == '#')
                 objective.getScore(l.replaceFirst("#", "")).score = index
-
             else objective.getScore(l).score = index
         }
 
@@ -323,7 +318,7 @@ class ScoreboardM(val name: String, private var display: String, private var hea
         linesList.forEachIndexed { i, line ->
 
             if ((line.contains("{") || line.contains("%")) && !line.contains('#')) {
-                val index = linesList.size - i -1
+                val index = linesList.size - i - 1
 
                 var prefix = line.substring(0, line.indexOf(if (line.contains("{")) "{" else "%"))
                 var suffix = set(line.removePrefix(prefix), player)
@@ -377,13 +372,13 @@ class ScoreboardM(val name: String, private var display: String, private var hea
     }
 
     /** clear the scoreboards of all players in the players list. */
-    fun shutdown() {
+    fun shutdownSB() {
         players.forEach { it.scoreboard = Bukkit.getScoreboardManager().newScoreboard }
     }
 
     /** Stops the scoreboard and delete it from the database. */
     fun delete() {
-        shutdown()
+        shutdownSB()
         players.clear()
         cancelTask()
         deleteScoreboardDatabase(toModel())
@@ -395,7 +390,7 @@ class ScoreboardM(val name: String, private var display: String, private var hea
 
     /** Run the self-update scoreboard task. */
     private fun runTask() {
-        val time = (if (sf.config.contains("priority-time.$name")) sf.config.getLong("priority-time.$name") else 20) * 20
+        val time = (if (Main.Companion.sf.config.contains("priority-time.$name")) Main.Companion.sf.config.getLong("priority-time.$name") else 20) * 20
 
         task = object : BukkitRunnable() {
             override fun run() {
@@ -433,7 +428,7 @@ class ScoreboardM(val name: String, private var display: String, private var hea
                 override fun run() {
                     runTask()
                 }
-            }.runTaskLater(plugin, minutes * 60  * 20L)
+            }.runTaskLater(plugin, minutes * 60 * 20L)
 
             true
         } else false

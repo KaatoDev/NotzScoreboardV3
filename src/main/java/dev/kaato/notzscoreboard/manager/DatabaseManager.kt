@@ -1,8 +1,8 @@
-package dev.kaato.manager
+package dev.kaato.notzscoreboard.manager
 
-import dev.kaato.database.DM
-import dev.kaato.entities.ScoreboardM
-import dev.kaato.entities.ScoreboardM.ScoreboardModel
+import dev.kaato.notzscoreboard.database.DM
+import dev.kaato.notzscoreboard.entities.ScoreboardM
+import dev.kaato.notzscoreboard.entities.ScoreboardModel
 import org.bukkit.entity.Player
 import java.io.IOException
 import java.sql.SQLException

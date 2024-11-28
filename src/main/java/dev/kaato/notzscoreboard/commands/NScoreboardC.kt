@@ -1,24 +1,24 @@
-package dev.kaato.commands
+package dev.kaato.notzscoreboard.commands
 
-import dev.kaato.manager.PlayerManager.resetPlayer
-import dev.kaato.manager.PlayerManager.seePlayers
-import dev.kaato.manager.ScoreboardManager.addGroupTo
-import dev.kaato.manager.ScoreboardManager.addPlayerTo
-import dev.kaato.manager.ScoreboardManager.blacklist
-import dev.kaato.manager.ScoreboardManager.createScoreboard
-import dev.kaato.manager.ScoreboardManager.deleteScoreboard
-import dev.kaato.manager.ScoreboardManager.display
-import dev.kaato.manager.ScoreboardManager.pauseScoreboard
-import dev.kaato.manager.ScoreboardManager.remGroupFrom
-import dev.kaato.manager.ScoreboardManager.remPlayerFrom
-import dev.kaato.manager.ScoreboardManager.scoreboards
-import dev.kaato.manager.ScoreboardManager.setColor
-import dev.kaato.manager.ScoreboardManager.setDisplay
-import dev.kaato.manager.ScoreboardManager.setTemplate
-import dev.kaato.manager.ScoreboardManager.reload
-import dev.kaato.manager.ScoreboardManager.seeVisibleGroups
-import dev.kaato.manager.ScoreboardManager.updateAllScoreboards
-import dev.kaato.manager.ScoreboardManager.viewScoreboard
+import dev.kaato.notzscoreboard.manager.PlayerManager.resetPlayer
+import dev.kaato.notzscoreboard.manager.PlayerManager.seePlayers
+import dev.kaato.notzscoreboard.manager.ScoreboardManager.addGroupTo
+import dev.kaato.notzscoreboard.manager.ScoreboardManager.addPlayerTo
+import dev.kaato.notzscoreboard.manager.ScoreboardManager.blacklist
+import dev.kaato.notzscoreboard.manager.ScoreboardManager.createScoreboard
+import dev.kaato.notzscoreboard.manager.ScoreboardManager.deleteScoreboard
+import dev.kaato.notzscoreboard.manager.ScoreboardManager.display
+import dev.kaato.notzscoreboard.manager.ScoreboardManager.pauseScoreboard
+import dev.kaato.notzscoreboard.manager.ScoreboardManager.reload
+import dev.kaato.notzscoreboard.manager.ScoreboardManager.remGroupFrom
+import dev.kaato.notzscoreboard.manager.ScoreboardManager.remPlayerFrom
+import dev.kaato.notzscoreboard.manager.ScoreboardManager.scoreboards
+import dev.kaato.notzscoreboard.manager.ScoreboardManager.seeVisibleGroups
+import dev.kaato.notzscoreboard.manager.ScoreboardManager.setColor
+import dev.kaato.notzscoreboard.manager.ScoreboardManager.setDisplay
+import dev.kaato.notzscoreboard.manager.ScoreboardManager.setTemplate
+import dev.kaato.notzscoreboard.manager.ScoreboardManager.updateAllScoreboards
+import dev.kaato.notzscoreboard.manager.ScoreboardManager.viewScoreboard
 import notzapi.utils.MessageU.getMessage
 import notzapi.utils.MessageU.join
 import notzapi.utils.MessageU.send
@@ -47,15 +47,17 @@ class NScoreboardC : TabExecutor {
         val scoreboard = if (a?.isNotEmpty() == true && scoreboards.containsKey(a[0])) a[0] else null
 
         when (a!!.size) {
-            1 ->  if (scoreboard == null) when (a[0]) {
-                "list" -> sendHeader(p, "&6⧽ &eScoreboards:\n" +
-                        join(scoreboards.values.mapIndexed { index, it ->
-                            val str = if (scoreboards.size == 1) "⧽"
-                            else if (index == 0) "⎧"
-                            else if (index == scoreboards.size-1) "⎩"
-                            else "⎜"
-                            "&e$str &f${it.name}&e: &f${it.getDisplay()}\n"
-                        }, separator = ""))
+            1 -> if (scoreboard == null) when (a[0]) {
+                "list" -> sendHeader(
+                    p, "&6⧽ &eScoreboards:\n" +
+                            join(scoreboards.values.mapIndexed { index, it ->
+                                val str = if (scoreboards.size == 1) "⧽"
+                                else if (index == 0) "⎧"
+                                else if (index == scoreboards.size - 1) "⎩"
+                                else "⎜"
+                                "&e$str &f${it.name}&e: &f${it.getDisplay()}\n"
+                            }, separator = "")
+                )
 
                 "players" -> seePlayers(p)
 
@@ -113,7 +115,6 @@ class NScoreboardC : TabExecutor {
 
                 "set" -> if (scoreboards.containsKey(a[1]))
                     addPlayerTo(p, p, a[1])
-
                 else send(p, "&cEsta scoreboard não existe!")
 
                 else -> help(p)
@@ -160,7 +161,7 @@ class NScoreboardC : TabExecutor {
 
                 "settemplate" -> setTemplate(p, scoreboard, template = a[2])
 
-            }  else help(p)
+            } else help(p)
 
             4 -> if (a[0] == "create") {
                 if (!blacklist.contains(a[1])) {
@@ -221,7 +222,8 @@ class NScoreboardC : TabExecutor {
      */
     private fun help(p: Player, scoreboard: String? = null) {
         if (scoreboard == null)
-            sendHeader(p, """
+            sendHeader(
+                p, """
                 ${getMessage("commands.notzscoreboard")} &f/&enotzscoreboard &7+
                 &7+ &ecreate &f<&ename&f> &f<&edisplay&f> (&eheader&f) (&etemplate&f) (&efooter&f) &7- ${getMessage("commands.create")}
                 &7+ &edelete &f<&escoreboard&f> &7- ${getMessage("commands.delete")}
@@ -231,9 +233,10 @@ class NScoreboardC : TabExecutor {
                 &7+ &ereset &f<&eplayer&f> &7- ${getMessage("commands.reset")}
                 &7+ &eset &f<&escoreboard&f> &7- ${getMessage("commands.set")}
                 &7+ &eupdate &7- ${getMessage("commands.update")}
-            """.trimIndent())
-
-        else sendHeader(p, """
+            """.trimIndent()
+            )
+        else sendHeader(
+            p, """
             &f/&enotzsb &a${scoreboard} &7+
             &7+ &eaddplayer &f<&eplayer&f> &7- ${getMessage("commands.scoreboard.addplayer")}
             &7+ &eaddgroup &f<&egroup&f> &7- ${getMessage("commands.scoreboard.addgroup")}
@@ -251,6 +254,7 @@ class NScoreboardC : TabExecutor {
             &7+ &esettemplate &f<&etemplate&f> &7- ${getMessage("commands.scoreboard.settemplate")}
             &7+ &eview &7- ${getMessage("commands.scoreboard.view")}
             &7+ &evisiblegroups &7- ${getMessage("commands.scoreboard.visiblegroups")}
-        """.trimIndent())
+        """.trimIndent()
+        )
     }
 }

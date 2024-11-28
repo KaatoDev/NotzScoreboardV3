@@ -1,14 +1,12 @@
-package dev.kaato
+package dev.kaato.notzscoreboard
 
-import dev.kaato.commands.NScoreboardC
-import dev.kaato.events.JoinLeaveE
-import dev.kaato.manager.ScoreboardManager.load
-import dev.kaato.manager.ScoreboardManager.shutdown
+import dev.kaato.notzscoreboard.commands.NScoreboardC
+import dev.kaato.notzscoreboard.events.JoinLeaveE
+import dev.kaato.notzscoreboard.manager.ScoreboardManager.load
+import dev.kaato.notzscoreboard.manager.ScoreboardManager.shutdown
 import notzapi.NotzAPI
 import notzapi.NotzAPI.Companion.messageManager
 import notzapi.apis.NotzYAML
-import notzapi.utils.MessageU.createHover
-import notzapi.utils.MessageU.createHoverURL
 import notzapi.utils.MessageU.send
 import notzapi.utils.MessageU.sendHoverURL
 import notzapi.utils.MessageU.set

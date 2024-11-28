@@ -1,13 +1,13 @@
-package dev.kaato.manager
+package dev.kaato.notzscoreboard.manager
 
-import dev.kaato.entities.ScoreboardM
-import dev.kaato.manager.DatabaseManager.deletePlayerDatabase
-import dev.kaato.manager.DatabaseManager.insertPlayerDatabase
-import dev.kaato.manager.DatabaseManager.loadPlayersDatabase
-import dev.kaato.manager.DatabaseManager.updatePlayerDatabase
-import dev.kaato.manager.ScoreboardManager.checkVisibleGroupsBy
-import dev.kaato.manager.ScoreboardManager.default_group
-import dev.kaato.manager.ScoreboardManager.scoreboards
+import dev.kaato.notzscoreboard.entities.ScoreboardM
+import dev.kaato.notzscoreboard.manager.DatabaseManager.deletePlayerDatabase
+import dev.kaato.notzscoreboard.manager.DatabaseManager.insertPlayerDatabase
+import dev.kaato.notzscoreboard.manager.DatabaseManager.loadPlayersDatabase
+import dev.kaato.notzscoreboard.manager.DatabaseManager.updatePlayerDatabase
+import dev.kaato.notzscoreboard.manager.ScoreboardManager.checkVisibleGroupsBy
+import dev.kaato.notzscoreboard.manager.ScoreboardManager.default_group
+import dev.kaato.notzscoreboard.manager.ScoreboardManager.scoreboards
 import notzapi.utils.MessageU.join
 import notzapi.utils.MessageU.send
 import notzapi.utils.MessageU.sendHeader
@@ -21,12 +21,10 @@ object PlayerManager {
         if (players.containsKey(player.name)) {
             if (scoreboards.containsKey(players[player.name]))
                 scoreboards[players[player.name]]!!.addPlayer(player)
-
             else players.remove(player.name)
 
         } else if (scoreboards.containsKey(default_group))
             scoreboards[default_group]!!.addPlayer(player)
-
         else send(Bukkit.getConsoleSender(), "&cNão foi possível atribuir uma scoreboard ao player &f${player.name}&c. Erro: pmanager1 ")
     }
 
@@ -34,12 +32,10 @@ object PlayerManager {
         if (players.containsKey(player.name)) {
             if (scoreboards.containsKey(players[player.name]))
                 scoreboards[players[player.name]]!!.remPlayer(player)
-
             else players.remove(player.name)
 
         } else if (scoreboards.containsKey(default_group))
             scoreboards[default_group]!!.remPlayer(player)
-
         else send(Bukkit.getConsoleSender(), "&cNão foi possível remover/atribuir uma scoreboard ao player &f${player.name}&c. Erro: pmanager2 ")
     }
 

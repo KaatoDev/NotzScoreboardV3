@@ -1,7 +1,9 @@
-package dev.kaato.database
+package dev.kaato.notzscoreboard.database
 
-import dev.kaato.entities.ScoreboardM
-import dev.kaato.entities.ScoreboardM.ScoreboardModel
+import dev.kaato.notzscoreboard.entities.ScoreboardM
+import dev.kaato.notzscoreboard.entities.ScoreboardModel
+import notzapi.utils.MessageU.send
+import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.util.io.BukkitObjectInputStream
 import org.bukkit.util.io.BukkitObjectOutputStream
@@ -143,7 +145,14 @@ class DM {
         val dataInput = BukkitObjectInputStream(ByteArrayInputStream(inputStream))
         dataInput.readInt()
 
-        val s = dataInput.readObject() as ScoreboardModel
+        val s = try {
+            dataInput.readObject() as ScoreboardModel
+        } catch (e: NoSuchMethodError) {
+            send(Bukkit.getConsoleSender(), "Erro ao recuperar o modelo da scoreboard da database, por favor recrie a database recriando as scoreboards (não há necessidade de mexer nas configuração .yml).")
+            throw RuntimeException(e)
+        }
+
+
         val scoreboard = ScoreboardM(s.name, s.display, s.header, s.template, s.footer, s.color, s.visibleGroups)
 
         dataInput.close()

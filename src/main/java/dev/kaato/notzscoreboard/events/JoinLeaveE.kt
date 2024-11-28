@@ -1,7 +1,7 @@
-package dev.kaato.events
+package dev.kaato.notzscoreboard.events
 
-import dev.kaato.manager.PlayerManager.joinPlayer
-import dev.kaato.manager.PlayerManager.leavePlayer
+import dev.kaato.notzscoreboard.manager.PlayerManager.joinPlayer
+import dev.kaato.notzscoreboard.manager.PlayerManager.leavePlayer
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerJoinEvent
