@@ -1,5 +1,5 @@
 <div align="center">
-<img src="https://github.com/KaatoDev/NotzScoreboard/assets/107152563/e42230a1-3d52-4717-b592-23ab428467b7" alt="" height="300" >
+<img src="https://github.com/user-attachments/assets/af5b6eea-b10c-4433-8be1-de2dfa06a5d0" alt="" height="300" >
 
 #
 O NotzScoreboardV3 é um plugin de Scoreboard completo e totalmente personalizável que conta com suporte a mútiplas scoreboards simutâneas, placeholders próprias e PlaceholderAPI, database via MySQL ou SQLite e atualização dinâmica para maior eficiência.
