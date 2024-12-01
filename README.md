@@ -62,13 +62,14 @@ Você pode optar por utilizar as placeholders dinâmicas de outros plugins atrav
 
 ## Commandos
 ### `/notzsb`
- - `delete` \<scoreboard> - Cria a scoreboard com opção de já setar as templates.
- - `list` - Deleta uma scoreboard
- - `players` - Lista todas as scoreboards criadas.
- - `reload` - Lista todos os players registrados e suas respectivas scoreboards.
- - `reset` \<player> - Recarrega partes o plugin.
- - `set` \<scoreboard> - Reseta a scoreboard do player para a scoreboard padrão.
- - `update` - Seta a própria scoreboard.
+ - `create` \<name> \<display> (header) (template) (footer) - Cria a scoreboard com opção de já setar as templates.
+ - `delete` \<scoreboard> - Deleta uma scoreboard.
+ - `list` - Lista todas as scoreboards criadas.
+ - `players` - Lista todos os players registrados e suas respectivas scoreboards.
+ - `reload` - Recarrega partes o plugin.
+ - `reset` \<player> - Reseta a scoreboard do player para a scoreboard padrão.
+ - `set` \<scoreboard> - Seta a própria scoreboard.
+ - `update` - Atualiza todas as scoreboards.
  - `<scoreboard>`
    - `addplayer` <player> - Adiciona um player à scoreboard.
    - `addgroup` <group> - Adiciona um grupo ao VisibleGroups da scoreboard
