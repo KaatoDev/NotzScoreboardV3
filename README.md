@@ -92,4 +92,4 @@ Você pode optar por utilizar as placeholders dinâmicas de outros plugins atrav
 
 #
 
-<sub> Versões testadas: 1.8 </sub>
+<sub> Versões testadas: 1.8 - 1.12.2 </sub>
