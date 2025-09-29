@@ -1,25 +1,25 @@
 <div align="center">
-<img src="https://github.com/user-attachments/assets/af5b6eea-b10c-4433-8be1-de2dfa06a5d0" alt="" height="300" >
+<img src="https://github.com/user-attachments/assets/af5b6eea-b10c-4433-8be1-de2dfa06a5d0" alt="NotzScoreboardV3" height="300" >
 
 #
-O NotzScoreboardV3 é um plugin de Scoreboard completo e totalmente personalizável que conta com suporte a mútiplas scoreboards simutâneas, placeholders próprias e PlaceholderAPI, database via MySQL ou SQLite e atualização dinâmica para maior eficiência.
+NotzScoreboard is a complete and fully customizable scoreboard plugin that features: support for multiple simultaneous scoreboards; its own placeholders and PlaceholderAPI; database via MySQL or SQLite and dynamic updating for greater efficiency.
 
 <br/>
 
-## Informações
+## Information
 
 ### `Scoreboards`
-O plugin conta com scoreboards dinâmicas que atualizam somente placeholders inseridas nela em cada linha, sem que precise recarregar a scoreboard completamente!
-Contém também mútiplos comandos de personalização para que possam ser criadas e modificadas diretamente do servidor sem precisar mexer nos arquivos.
+The plugin has dynamic scoreboards that only update the placeholders inserted in each line, without having to reload the scoreboard completely!
+It also contains multiple customization commands so that they can be created and modified directly from the server without having to mess with the files.
 
-### `Grupos`
-As scoreboards são separadas por grupos e pré-programadas para que seja possível visualizar players de outros grupos (e até do mesmo) na sua scoreboard ou do próprio grupo em outras scoreboards.
+### `Groups`
+The scoreboards are separated by groups and pre-programmed so that it is possible to view players from other groups (and even from the same group) on your scoreboard or from the group itself on other scoreboards.
 
 ### `Templates`
-Possui também um sistema de templates que podem ser criados no arquivo de configuração do plugin e setados através do jogo utilizando-os como Header, Footer ou o template principal, permitindo assim, ao mesmo tempo, uma maior customização e padronização de cada scoreboard.
+It also has a system of templates that can be created in the plugin's configuration file and set through the game using them as Header, Footer or the main template, thus allowing greater customization and standardization of each scoreboard.
 
 ### Placeholders
-Você pode optar por utilizar as placeholders dinâmicas de outros plugins através do PlaceholderAPI ou placeholders estáticas próprias que podem ser criadas atravé do arquivo de configuração do plugin.
+You can choose to use dynamic placeholders from other plugins via the PlaceholderAPI or your own static placeholders that can be created via the plugin's configuration file.
 
 <br/>
 
@@ -30,66 +30,66 @@ Você pode optar por utilizar as placeholders dinâmicas de outros plugins atrav
 
 <br/>
 
-## Dependências
+## Dependencies
 - PlaceholderAPI
 
 <br/>
 
 ## Placeholders
- - `{clan}` - Nome do clan. (Simpleclans) [PlaceholderAPI]
- - `{clan_tag}` - Tag do clan. (Simpleclans) [PlaceholderAPI]
- - `{clankdr}` - KDR do clan. (Simpleclans) [PlaceholderAPI]
- - `{money}` - Dinheiro do player direto do Vault. [PlaceholderAPI]
- - `{player_name}` - Nome do player.
- - `{player_displayname}` - Displayname do player.
- - `{ping}` - Ping do player.
- - `{rank}` - (yRanks do yPlugins) Ele utiliza a tag como cor e depois o nome. [PlaceholderAPI]
- - `{status_rankup}` - (yRanks do yPlugins) Ele utiliza a tag como cor e depois o status. [PlaceholderAPI]
- - `{tps}` - TPS do servidor. [PlaceholderAPI]
+ - `{clan}` - Clan name (Simpleclans) [PlaceholderAPI]
+ - `{clan_tag}` - Clan tag (Simpleclans) [PlaceholderAPI]
+ - `{clankdr}` - KDR of the clan. (Simpleclans) [PlaceholderAPI]
+ - `{money}` - Player money straight from the Vault. [PlaceholderAPI]
+ - `{player_name}` - Player's name.
+ - `{player_displayname}` - Player display name.
+ - `{ping}` - Player ping.
+ - `{rank}` - (yRanks from yPlugins) It uses the tag as the color and then the name. [PlaceholderAPI]
+ - `{status_rankup}` - (yRanks from yPlugins) It uses the tag as the color and then the status. [PlaceholderAPI]
+ - `{tps}` - TPS of the server. [PlaceholderAPI]
 
- - `{staff}` - Pega o nick de um dos players online dos grupos visíveis daquele grupo. - Quantidade de players online nos grupos visíveis daquele grupo.
- - `{supstaff}` - Mesma coisa que o {staff}, porém retorna uma mensagem alternativa caso o player esteja offline
- - `{staff_list}` - Quantidade de players online nos grupos visíveis daquele grupo.
- - `{staff_'group'}` - Pega um dos players daquele grupo.
- - `{'group'_list}` - Pega a quantidade de player online naquele grupo.
-
-<br/>
-
-## Permissões
-- `notzscoreboard.admin` - Habilita o player a utilizar o comando de admin /notzsb.
+ - `{staff}` - Get the nick of one of the online players in the visible groups for that group. - Number of players online in the visible groups for that group.
+ - `{supstaff}` - Same thing as {staff}, but returns an alternative message if the player is offline
+ - `{staff_list}` - Number of players online in the visible groups for that group.
+ - `{staff_'group'}` - Get one of the players in that group.
+ - `{'group'_list}` - Gets the number of players online in that group.
 
 <br/>
 
-## Commandos
+## Permissions
+- `notzscoreboard.admin` - Enables the player to use the /notzsb admin command.
+
+<br/>
+
+## Commands
 ### `/notzsb`
- - `create` \<name> \<display> (header) (template) (footer) - Cria a scoreboard com opção de já setar as templates.
- - `delete` \<scoreboard> - Deleta uma scoreboard.
- - `list` - Lista todas as scoreboards criadas.
- - `players` - Lista todos os players registrados e suas respectivas scoreboards.
- - `reload` - Recarrega partes o plugin.
- - `reset` \<player> - Reseta a scoreboard do player para a scoreboard padrão.
- - `set` \<scoreboard> - Seta a própria scoreboard.
- - `update` - Atualiza todas as scoreboards.
+ - `create` \<name> \<display> (header) (template) (footer) - Creates the scoreboard with the option of already setting the templates.
+ - `delete` \<scoreboard> - Deletes a scoreboard.
+ - `list` - Lists all the scoreboards created.
+ - `players` - Lists all registered players and their respective scoreboards.
+ - `reload` - Reloads parts of the plugin.
+ - `reset` \<player> - Resets the player's scoreboard to the default scoreboard.
+ - `set` \<scoreboard> - Sets the scoreboard itself.
+ - `update` - Updates all scoreboards.
  - `<scoreboard>`
-   - `addplayer` <player> - Adiciona um player à scoreboard.
-   - `addgroup` <group> - Adiciona um grupo ao VisibleGroups da scoreboard
-   - `clearheader` - Limpa a header da scoreboard.
-   - `clearfooter` - Limpa a footer da scoreboard.
-   - `cleartemplate` - Limpa o template da scoreboard.
-   - `pause` (minutes) - Pausa a atualização da scoreboard por X minutos (por padrão é pausado por 1 minuto).
-   - `players` - Vê os players cadastrados na scoreboard.
-   - `remplayer` <player> - Remove um player da scoreboard.
-   - `remgroup` <group> - Remove um grupo do VisibleGroups da scoreboard
-   - `setcolor` <color> - Seta uma nova cor da scoreboard.
-   - `setdisplay` <display> - Seta um novo display na scoreboard.
-   - `setheader` <template> - Seta uma nova header na scoreboard.
-   - `setfooter` <template> - Seta uma nova footer na scoreboard.
-   - `settemplate` <template> - Seta um novo template na scoreboard.
-   - `view` - Visualiza a scoreboard sem precisar setar.
-   - `visiblegroups` - Vê os grupos visíveis inseridos no grupo.
+   - `addplayer` <player> - Adds a player to the scoreboard.
+   - `addgroup` <group> - Adds a group to the scoreboard's VisibleGroups.
+   - `clearheader` - Clears the scoreboard header.
+   - `clearfooter` - Clears the footer of the scoreboard.
+   - `cleartemplate` - Clears the scoreboard template.
+   - `pause` (minutes) - Pause the scoreboard update for X minutes (by default it is paused for 1 minute).
+   - `players` - View the players registered on the scoreboard.
+   - `remplayer` <player> - Remove a player from the scoreboard.
+   - `remgroup` <group> - Remove a VisibleGroups group from the scoreboard
+   - `setcolor` <color> - Sets a new color for the scoreboard.
+   - `setdisplay` <display> - Sets a new display on the scoreboard.
+   - `setheader` <template> - Set a new header on the scoreboard.
+   - `setfooter` <template> - Set a new footer on the scoreboard.
+   - `settemplate` <template> - Sets a new template on the scoreboard.
+   - `view` - View the scoreboard without having to set it.
+   - `visiblegroups` - View the visible groups inserted in the group.
 <br/>
-<sub> | <> argumento obrigatório. | ( ) argumento opcional. | </sub>
+<sub> | <> required argument. | ( ) optional argument. | </sub>
 
 #
 
-<sub> Versões testadas: 1.8 - 1.12.2 </sub>
+<sub> Tested versions: 1.8 - 1.12.2 </sub>
