@@ -8,9 +8,8 @@ import java.sql.SQLException
 
 class DAO {
     private val c: Connection
-    private val sql = if (cf.config.getBoolean("useMySQL"))
-        arrayOf(
-            """
+    private val sql = if (cf.config.getBoolean("useMySQL")) arrayOf(
+        """
             create table if not exists scoreboardmodel(
             id int primary key auto_increment,
             name varchar(36) unique not null,
@@ -22,7 +21,7 @@ class DAO {
             scoreboardname int not null,
             constraint scoreboardnamefk foreign key (scoreboardname) references scoreboardmodel(name) on delete cascade)
         """.trimIndent()
-        )
+    )
     else arrayOf(
         """
             create table if not exists scoreboardmodel(
@@ -41,7 +40,7 @@ class DAO {
 
     init {
         try {
-            Class.forName("org.sqlite.JDBC");
+            Class.forName("org.sqlite.JDBC")
             c = DriverManager.getConnection("jdbc:sqlite:$pathRaw/notzscoreboard.db")
             sql.forEach { c.prepareStatement(it).use { ps -> ps.execute() } }
 
