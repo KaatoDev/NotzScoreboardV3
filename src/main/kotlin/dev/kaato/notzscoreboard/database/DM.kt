@@ -1,8 +1,8 @@
 package dev.kaato.notzscoreboard.database
 
+import dev.kaato.notzapi.utils.MessageU.Companion.send
 import dev.kaato.notzscoreboard.entities.ScoreboardM
 import dev.kaato.notzscoreboard.entities.ScoreboardModel
-import notzapi.utils.MessageU.send
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.util.io.BukkitObjectInputStream

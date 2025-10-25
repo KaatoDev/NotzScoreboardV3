@@ -1,10 +1,10 @@
 plugins {
-    kotlin("jvm") version "2.0.0"
+    kotlin("jvm") version "2.1.10"
     id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 
 group = "dev.kaato"
-version = "3.1"
+version = "3.2"
 
 repositories {
     mavenCentral()
@@ -12,20 +12,23 @@ repositories {
     maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots/") {
         name = "spigotmc-repo"
     }
+    maven("https://oss.sonatype.org/content/repositories/snapshots/")
     maven("https://oss.sonatype.org/content/groups/public/") {
         name = "sonatype"
     }
-    maven ("https://jitpack.io")
+    maven("https://maven.elmakers.com/repository/") {
+        name = "elmakers-repo"
+    }
+    maven("https://jitpack.io")
+    maven("https://repo.extendedclip.com/releases/")
 }
 
 dependencies {
     compileOnly("org.spigotmc:spigot-api:1.12.2-R0.1-SNAPSHOT")
+    compileOnly("me.clip:placeholderapi:2.11.6")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-    compileOnly("org.spigotmc:spigot-api:1.12-R0.1-SNAPSHOT")
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-    implementation("dev.kaato:NotzAPI:0.4.2")
+    implementation("dev.kaato:NotzAPI:0.4.7")
     implementation("org.xerial:sqlite-jdbc:3.46.0.0")
-    compileOnly("me.clip:placeholderapi:2.11.5")
 }
 
 val targetJavaVersion = 8
