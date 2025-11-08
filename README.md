@@ -1,5 +1,16 @@
 <div align="center">
-<img src="https://github.com/user-attachments/assets/af5b6eea-b10c-4433-8be1-de2dfa06a5d0" alt="NotzScoreboardV3" height="300" >
+  
+##### **NotzPlugins**
+<a href="https://modrinth.com/plugin/notzexcavate">
+<img src="https://repo.kaato.dev/images/plugins/NotzExcavate2.png" alt="Notz Excavate" width="150"/>
+</a>
+<img src="https://repo.kaato.dev/images/plugins/NotzScoreboard2.png" alt="Notz Scoreboard" width="150"/>
+<a href="https://modrinth.com/plugin/notzwarps">
+<img src="https://repo.kaato.dev/images/plugins/NotzWarps2.png" alt="Notz Warps" width="150"/>
+</a>
+  
+#
+<img src="https://repo.kaato.dev/images/plugins/NotzScoreboard2.png" alt="NotzScoreboardV3" height="300" >
 
 #
 NotzScoreboard is a complete and fully customizable scoreboard plugin that features: support for multiple simultaneous scoreboards; its own placeholders and PlaceholderAPI; database via MySQL or SQLite and dynamic updating for greater efficiency.
@@ -24,8 +35,36 @@ You can choose to use dynamic placeholders from other plugins via the Placeholde
 <br/>
 
 ## Scoreboard Demo
-![player v3](https://github.com/user-attachments/assets/33363177-049a-4e31-938b-29ff63b6f173)
+<br/>
 
+### Player example with staff on and off
+<div>
+<img src="https://repo.kaato.dev/images/plugins/NotzScoreboard/Player.png" alt="Player" width="300"/>
+</div>
+
+<br/>
+
+### Helper and Trial example
+<div>
+<img src="https://repo.kaato.dev/images/plugins/NotzScoreboard/Helper.png" alt="Helper" width="300"/>
+<img src="https://repo.kaato.dev/images/plugins/NotzScoreboard/Trial.png" alt="Trial" width="300"/>
+</div>
+
+<br/>
+
+### Mod and Admin example
+<div>
+<img src="https://repo.kaato.dev/images/plugins/NotzScoreboard/Mod.png" alt="Mod" width="300"/>
+<img src="https://repo.kaato.dev/images/plugins/NotzScoreboard/Admin.png" alt="Admin" width="300"/>
+</div>
+
+<br/>
+
+### Manager and Owner example
+<div>
+<img src="https://repo.kaato.dev/images/plugins/NotzScoreboard/Manager.png" alt="Manager" width="300"/>
+<img src="https://repo.kaato.dev/images/plugins/NotzScoreboard/Owner.png" alt="Owner" width="300"/>
+</div>
 </div>
 
 <br/>
@@ -42,7 +81,7 @@ You can choose to use dynamic placeholders from other plugins via the Placeholde
  - `{money}` - Player money straight from the Vault. [PlaceholderAPI]
  - `{player_name}` - Player's name.
  - `{player_displayname}` - Player display name.
- - `{ping}` - Player ping.
+ - `{ping}` - Player ping. [PlaceholderAPI]
  - `{rank}` - (yRanks from yPlugins) It uses the tag as the color and then the name. [PlaceholderAPI]
  - `{status_rankup}` - (yRanks from yPlugins) It uses the tag as the color and then the status. [PlaceholderAPI]
  - `{tps}` - TPS of the server. [PlaceholderAPI]
@@ -78,18 +117,19 @@ You can choose to use dynamic placeholders from other plugins via the Placeholde
    - `cleartemplate` - Clears the scoreboard template.
    - `pause` (minutes) - Pause the scoreboard update for X minutes (by default it is paused for 1 minute).
    - `players` - View the players registered on the scoreboard.
-   - `remplayer` <player> - Remove a player from the scoreboard.
-   - `remgroup` <group> - Remove a VisibleGroups group from the scoreboard
-   - `setcolor` <color> - Sets a new color for the scoreboard.
-   - `setdisplay` <display> - Sets a new display on the scoreboard.
-   - `setheader` <template> - Set a new header on the scoreboard.
-   - `setfooter` <template> - Set a new footer on the scoreboard.
-   - `settemplate` <template> - Sets a new template on the scoreboard.
+   - `remplayer` \<player> - Remove a player from the scoreboard.
+   - `remgroup` \<group> - Remove a VisibleGroups group from the scoreboard
+   - `setcolor` \<color> - Sets a new color for the scoreboard.
+   - `setdisplay` \<display> - Sets a new display on the scoreboard.
+   - `setheader` \<template> - Set a new header on the scoreboard.
+   - `setfooter` \<template> - Set a new footer on the scoreboard.
+   - `settemplate` \<template> - Sets a new template on the scoreboard.
    - `view` - View the scoreboard without having to set it.
    - `visiblegroups` - View the visible groups inserted in the group.
+
 <br/>
 <sub> | <> required argument. | ( ) optional argument. | </sub>
 
 #
 
-<sub> Tested versions: 1.8 - 1.12.2 </sub>
+<sub> Tested versions: 1.8 - 1.14.4 </sub>
