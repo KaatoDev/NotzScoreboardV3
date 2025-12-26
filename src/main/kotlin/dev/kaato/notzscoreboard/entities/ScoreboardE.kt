@@ -1,13 +1,14 @@
 package dev.kaato.notzscoreboard.entities
 
 import dev.kaato.notzapi.utils.MessageU.Companion.c
-import dev.kaato.notzscoreboard.Main
-import dev.kaato.notzscoreboard.Main.Companion.messageU
-import dev.kaato.notzscoreboard.Main.Companion.placeholderManager
-import dev.kaato.notzscoreboard.Main.Companion.plugin
-import dev.kaato.notzscoreboard.manager.DatabaseManager.deleteScoreboardDatabase
-import dev.kaato.notzscoreboard.manager.DatabaseManager.insertScoreboardDatabase
-import dev.kaato.notzscoreboard.manager.DatabaseManager.updateScoreboardDatabase
+import dev.kaato.notzscoreboard.NotzScoreboard
+import dev.kaato.notzscoreboard.NotzScoreboard.Companion.messageU
+import dev.kaato.notzscoreboard.NotzScoreboard.Companion.placeholderManager
+import dev.kaato.notzscoreboard.NotzScoreboard.Companion.plugin
+import dev.kaato.notzscoreboard.database.DatabaseManager.deleteScoreboardDB
+import dev.kaato.notzscoreboard.database.DatabaseManager.getScoreboardDB
+import dev.kaato.notzscoreboard.database.DatabaseManager.insertScoreboardDB
+import dev.kaato.notzscoreboard.database.DatabaseManager.updateScoreboardDB
 import dev.kaato.notzscoreboard.manager.ScoreboardManager
 import dev.kaato.notzscoreboard.manager.ScoreboardManager.default_group
 import dev.kaato.notzscoreboard.manager.ScoreboardManager.getPlayerFromGroup
@@ -15,10 +16,10 @@ import dev.kaato.notzscoreboard.manager.ScoreboardManager.getPlayersFromGroups
 import dev.kaato.notzscoreboard.manager.ScoreboardManager.scoreboards
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
-import org.bukkit.event.player.PlayerChangedWorldEvent
 import org.bukkit.scheduler.BukkitRunnable
 import org.bukkit.scheduler.BukkitTask
 import org.bukkit.scoreboard.DisplaySlot
+import java.time.LocalDateTime
 import kotlin.random.Random
 
 /**
@@ -30,21 +31,40 @@ import kotlin.random.Random
  * @param color The color that will be set at the start of each line.
  * @param visibleGroups List of scoreboard groups that's used for the {staff} placeholder.
  */
-class ScoreboardM(val name: String, private var display: String, private var header: String, private var template: String, private var footer: String, private var color: String, private val visibleGroups: MutableList<String>) {
+class ScoreboardE(val id: Int) {
     /**
      * @param name Unique name to be used in commands.
      * @param display Displayname that will appear on messages.
      */
-    constructor(name: String, display: String) : this(name, display, "", "player", "staff-status", "&e", mutableListOf()) {
-        insertScoreboardDatabase(toModel())
-    }
-    
+    constructor(name: String, display: String, color: String = "&e", header: String = "", template: String = "player", footer: String = "staff-status", visibleGroups: MutableList<String> = mutableListOf()) : this(insertScoreboardDB(name, display, color, header, template, footer, visibleGroups))
+
+    val name: String
+    private var display: String
+    private var header: String
+    private var template: String
+    private var footer: String
+    private var color: String
+    private val visibleGroups = mutableListOf<String>()
+    val created: LocalDateTime
+    private var updated: LocalDateTime?
+
     private var linesList = mutableListOf<String>()
     private var players = mutableListOf<Player>()
     private var isntDefault = true
     private var task: BukkitTask? = null
 
     init {
+        val sb = getScoreboardDB(id)
+        name = sb.name
+        display = sb.display
+        header = sb.header
+        template = sb.template
+        footer = sb.footer
+        color = sb.color
+        visibleGroups.addAll(sb.visibleGroups)
+        created = sb.created
+        updated = sb.updated
+
         update()
     }
 
@@ -108,11 +128,13 @@ class ScoreboardM(val name: String, private var display: String, private var hea
      * Insert any of the 3 parameters.
      */
     fun setTemplate(header: String? = null, template: String? = null, footer: String? = null) {
+        println("header = [${header}], template = [${template}], footer = [${footer}]")
         this.header = header ?: this.header
         this.template = template ?: this.template
         this.footer = footer ?: this.footer
         update()
         databaseUpdate()
+        println("header = [${header}], template = [${template}], footer = [${footer}]")
     }
 
     /** @param color New color template to be set. */
@@ -167,7 +189,7 @@ class ScoreboardM(val name: String, private var display: String, private var hea
             true
         } else false
     }
-    
+
     fun addGroup(groups: MutableList<String>) {
         groups.forEach { addGroup(it) }
     }
@@ -265,7 +287,7 @@ class ScoreboardM(val name: String, private var display: String, private var hea
         val scoreboard = Bukkit.getScoreboardManager().newScoreboard
         val objective = scoreboard.registerNewObjective(name, "yummy")
         objective.displaySlot = DisplaySlot.SIDEBAR
-        objective.displayName = placeholderManager.set(Main.Companion.sf.config.getString("title"))
+        objective.displayName = placeholderManager.set(NotzScoreboard.Companion.sf.config.getString("title"))
 
         linesList.forEachIndexed { i, line ->
             val r = if (line.contains("{")) 0 else if (line.contains("%")) 1 else null
@@ -365,13 +387,8 @@ class ScoreboardM(val name: String, private var display: String, private var hea
     }
 
     /** Update the scoreboard on the database. */
-    private fun databaseUpdate() {
-        updateScoreboardDatabase(toModel())
-    }
-
-    /** Transform the scoreboard on the database model. */
-    private fun toModel(): ScoreboardModel {
-        return ScoreboardModel(name, display, header, template, footer, color, visibleGroups)
+    fun databaseUpdate() {
+        updateScoreboardDB(this)
     }
 
     /** clear the scoreboards of all players in the player's list. */
@@ -384,7 +401,7 @@ class ScoreboardM(val name: String, private var display: String, private var hea
         shutdownSB()
         players.clear()
         cancelTask()
-        deleteScoreboardDatabase(toModel())
+        deleteScoreboardDB(id)
     }
 
     // managers - end
@@ -393,7 +410,7 @@ class ScoreboardM(val name: String, private var display: String, private var hea
 
     /** Run the self-update scoreboard task. */
     private fun runTask() {
-        val time = (if (Main.Companion.sf.config.contains("priority-time.$name")) Main.Companion.sf.config.getLong("priority-time.$name") else 20) * 20
+        val time = (if (NotzScoreboard.Companion.sf.config.contains("priority-time.$name")) NotzScoreboard.Companion.sf.config.getLong("priority-time.$name") else 20) * 20
 
         task = object : BukkitRunnable() {
             override fun run() {

@@ -1,7 +1,8 @@
 package dev.kaato.notzscoreboard
 
-import dev.kaato.notzapi.NotzAPI.addPlugin
-import dev.kaato.notzapi.NotzAPI.removePlugin
+import dev.kaato.notzapi.NotzAPI
+import dev.kaato.notzapi.NotzAPI.Companion.addPlugin
+import dev.kaato.notzapi.NotzAPI.Companion.removePlugin
 import dev.kaato.notzapi.apis.NotzYAML
 import dev.kaato.notzapi.managers.ItemManager
 import dev.kaato.notzapi.managers.MessageManager
@@ -10,15 +11,20 @@ import dev.kaato.notzapi.managers.PlaceholderManager
 import dev.kaato.notzapi.utils.*
 import dev.kaato.notzapi.utils.MessageU.Companion.sendHoverURL
 import dev.kaato.notzscoreboard.commands.NScoreboardC
+import dev.kaato.notzscoreboard.database.DAO
 import dev.kaato.notzscoreboard.events.JoinLeaveE
 import dev.kaato.notzscoreboard.manager.ScoreboardManager.load
 import dev.kaato.notzscoreboard.manager.ScoreboardManager.shutdown
+import org.bstats.bukkit.Metrics
 import org.bukkit.Bukkit
 import org.bukkit.Bukkit.getPluginManager
+import org.bukkit.Bukkit.savePlayers
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.scheduler.BukkitRunnable
+import kotlin.system.measureTimeMillis
 
-class Main : JavaPlugin() {
+
+class NotzScoreboard : JavaPlugin() {
     companion object {
         lateinit var pathRaw: String
 
@@ -27,6 +33,7 @@ class Main : JavaPlugin() {
         lateinit var sf: NotzYAML
 
         lateinit var plugin: JavaPlugin
+        var notzAPI: NotzAPI? = null
         lateinit var napi: NotzManager
         lateinit var itemManager: ItemManager
         lateinit var messageManager: MessageManager
@@ -36,30 +43,45 @@ class Main : JavaPlugin() {
         lateinit var menuU: MenuU
         lateinit var messageU: MessageU
         lateinit var othersU: OthersU
+        lateinit var dao: DAO
     }
 
     override fun onEnable() {
-        pathRaw = dataFolder.absolutePath
-        plugin = this
-        napi = addPlugin(plugin)
+        val load = measureTimeMillis {
+            pathRaw = dataFolder.absolutePath
+            plugin = this
 
-        messageManager = napi.messageManager
-        itemManager = napi.itemManager
-        placeholderManager = napi.placeholderManager
-        eventU = napi.eventU
-        mainU = napi.mainU
-        menuU = napi.menuU
-        messageU = napi.messageU
-        othersU = napi.othersU
+            notzAPI = Bukkit.getServicesManager().load(NotzAPI::class.java)
+            napi = addPlugin(plugin)
+            napi.version = "3.3"
 
-        cf = NotzYAML(this, "config")
-        sf = NotzYAML(this, "scoreboard")
-        msgf = messageManager.messageFile
+            messageManager = napi.messageManager
+            itemManager = napi.itemManager
+            placeholderManager = napi.placeholderManager
+            eventU = napi.eventU
+            mainU = napi.mainU
+            menuU = napi.menuU
+            messageU = napi.messageU
+            othersU = napi.othersU
+
+            cf = NotzYAML(this, "config")
+            sf = NotzYAML(this, "scoreboard")
+            msgf = messageManager.messageFile
+
+            try {
+                dao = DAO()
+                dao.init()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
 
         object : BukkitRunnable() {
             override fun run() {
                 load()
                 start()
+                bStats()
+                othersU.sendAdmin("&2NotzScoreboard &ainitialized! (${load / 1000.0}s)")
             }
         }.runTaskLater(this, 4 * 20L)
     }
@@ -106,8 +128,15 @@ class Main : JavaPlugin() {
         }
     }
 
+    fun bStats() {
+        val pluginId = 28538
+        Metrics(this, pluginId)
+    }
+
     override fun onDisable() {
         removePlugin(plugin)
+//        saveScoreboard()
+        savePlayers()
         shutdown()
     }
 }

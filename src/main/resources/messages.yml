@@ -42,19 +42,17 @@ messages:
   setTemplate1: "&eThe {default0} of &fscoreboard {default1} &ehas been changed from &f'&c{default2}&f' &e to &a{default3}&e."
   setTemplate2: '&aThis is already the current {default0} for &fscoreboard {default1}&c!'
   setTemplate3: '&cYou must fill in at least one of the template fields!'
-  setColor1: "&eThe color of &fscoreboard {default0} &ehas been changed from &c'{default2}&c'&e to &a'{default2}&a'&e."
+  setColor1: "&eThe color of &fscoreboard {default0} &ehas been changed from &c'{default1}&c'&e to &a'{default2}&a'&e."
   setColor2: '&aThis is already the current color for &fscoreboard {default}&c!'
   reset: '&cThe inserted player does not exist or is offline.'
   resetPlayer1: '&eThe scoreboard for &fplayer {default} &ehas been reset to the default.'
   resetPlayer2: '&cThe &fplayer {default}&c is already on the default scoreboard!'
   seePlayers: '&cThere are no players with a scoreboard other than the default one.'
   updateAllScoreboards: '&eAll scoreboards have been updated.'
-
   status:
     staff: '&fStaff offline'
     supstaff: '&fOffline'
     offline: '&fOffline'
-
   commands:
     notzscoreboard: '&eUse'
     create: 'Creates the scoreboard with the option to pre-set the templates.'
@@ -65,7 +63,6 @@ messages:
     reset: "Resets the player's scoreboard to the default scoreboard."
     set: 'Sets the scoreboard itself.'
     update: 'Updates all scoreboards.'
-    
     scoreboard:
       addplayer: 'Adds a player to the scoreboard.'
       addgroup: "Adds a group to the scoreboard's VisibleGroups"
