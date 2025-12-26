@@ -2,11 +2,12 @@ package dev.kaato.notzscoreboard.manager
 
 import dev.kaato.notzapi.utils.MessageU
 import dev.kaato.notzapi.utils.MessageU.Companion.join
-import dev.kaato.notzscoreboard.Main.Companion.messageU
-import dev.kaato.notzscoreboard.Main.Companion.placeholderManager
-import dev.kaato.notzscoreboard.Main.Companion.plugin
-import dev.kaato.notzscoreboard.Main.Companion.sf
-import dev.kaato.notzscoreboard.entities.ScoreboardM
+import dev.kaato.notzscoreboard.NotzScoreboard.Companion.messageU
+import dev.kaato.notzscoreboard.NotzScoreboard.Companion.placeholderManager
+import dev.kaato.notzscoreboard.NotzScoreboard.Companion.plugin
+import dev.kaato.notzscoreboard.NotzScoreboard.Companion.sf
+import dev.kaato.notzscoreboard.database.DatabaseManager.loadScoreboardsDB
+import dev.kaato.notzscoreboard.entities.ScoreboardE
 import dev.kaato.notzscoreboard.manager.PlayerManager.checkPlayer
 import dev.kaato.notzscoreboard.manager.PlayerManager.initializePlayers
 import dev.kaato.notzscoreboard.manager.PlayerManager.loadPlayers
@@ -19,23 +20,43 @@ import kotlin.random.Random
 
 object ScoreboardManager {
     val blacklist = arrayOf("create", "delete", "remove", "list", "null", "players", "reload")
-    val scoreboards = hashMapOf<String, ScoreboardM>()
+    val scoreboards = hashMapOf<String, ScoreboardE>()
     private val templates = hashMapOf<String, List<String>>()
     private val staffStatus = hashMapOf<Boolean, List<String>>()
-    lateinit var default_group: String
+    var default_group: String
     private var priorityList = hashMapOf<String, PriorityClass>()
 
     data class PriorityClass(var task: BukkitTask?, var time: Long)
 
-// -------------------
+    // -------------------
+
+    init {
+        default_group = sf.config.getString("default_group") ?: "player"
+    }
+
+    fun getDefaultScoreboard(): ScoreboardE? = scoreboards.values.find { it.isDefault() }
+    fun getDefaultScoreboardId(): Int = getDefaultScoreboard()?.id ?: 0
+
     // scoreboard - start
+
+    fun getScoreboardByID(id: Int): ScoreboardE? {
+        return scoreboards.filterValues { it.id == id }.values.first()
+    }
+
+    fun getScoreboard(name: String): ScoreboardE? {
+        return scoreboards.filterKeys { it == name }.values.first()
+    }
+
+    fun containScoreboard(id: Int): Boolean {
+        return scoreboards.filterValues { it.id == id }.isNotEmpty()
+    }
 
     fun createScoreboard(name: String, display: String, player: Player? = null): Boolean {
         return if (!scoreboards.containsKey(name)) {
-            val scoreboard = ScoreboardM(name, display)
+            val scoreboard = ScoreboardE(name, display)
             scoreboards[name] = scoreboard
 
-            if (name == default_group) scoreboard.setDefault(true)
+            if (name == (getDefaultScoreboard()?.name ?: "")) scoreboard.setDefault(true)
             if (player != null) {
                 addPlayerTo(player, player, name)
                 messageU.send(player, "createScoreboard", display)
@@ -94,7 +115,7 @@ object ScoreboardManager {
             messageU.send(sender, "remPlayerFrom1", defaults = listOf(score.getDisplay(), player.name))
             checkPlayer(player, isDefault = score.isDefault())
 
-        } else messageU.send(sender, "remPlayerFrom2", defaults = listOf(player.name, if (players.containsKey(player.name)) players[player.name]!! else default_group))
+        } else messageU.send(sender, "remPlayerFrom2", defaults = listOf(player.name, if (players.containsKey(player.uniqueId)) players[player.uniqueId]!!.name else default_group))
     }
 
     fun addGroupTo(player: Player, scoreboard: String, group: String) {
@@ -161,7 +182,8 @@ object ScoreboardManager {
 
         if (color != temp) {
             score.setColor(color)
-            messageU.send(player, "setColor1", defaults = listOf(display(scoreboard), join(temp.map { temp + it })/*"$temp${temp[0]}$temp${temp[1]}"*/, join(color.map { color + it })/*"$color${color[0]}$color${color[1]}"*/))
+            player.sendMessage("$color $temp")
+            messageU.send(player, "setColor1", defaults = listOf(display(scoreboard), join(temp.map { temp + it }, ""), join(color.map { color + it }, "")))
         } else messageU.send(player, "setColor2", score.getDisplay())
 
     }
@@ -204,13 +226,13 @@ object ScoreboardManager {
     }
 
     fun getPlayersFromGroups(visibleGroups: List<String>): List<Player> {
-        return scoreboards.filterKeys { visibleGroups.contains(it) }.flatMap {
+        return scoreboards.filterValues { visibleGroups.contains(it.name) }.flatMap {
             it.value.getPlayers()
         }
     }
 
     private fun checkVisibleGroups(visibleGroups: List<String>): Boolean {
-        return visibleGroups.any { scoreboards.containsKey(it) && scoreboards[it]!!.getPlayers().isNotEmpty() }
+        return visibleGroups.map { scoreboards.values.find { sb -> sb.name == it } }.any { it != null && it.getPlayers().isNotEmpty() }
     }
 
     fun checkVisibleGroupsBy(scoreboard: String) {
@@ -314,17 +336,25 @@ object ScoreboardManager {
             ))
     }
 
-    private fun loadScoreboards() {
-        val scores = DatabaseManager.loadScoreboardsDatabase()
-        loadPlayers()
-
-        if (scores == null) {
-            messageU.send(Bukkit.getConsoleSender(), "&cError smanager1")
-            return
+    fun addConvertedScoreboards(cExcavators: List<ScoreboardE>): Int {
+        cExcavators.forEach {
+            if (!scoreboards.containsKey(it.name)) scoreboards[it.name] = it
         }
 
+        return cExcavators.size
+    }
+
+    private fun loadScoreboards() {
+        val scores = loadScoreboardsDB()
+        loadPlayers()
+
+//        if (scores == null) {
+////            messageU.send(Bukkit.getConsoleSender(), "&cError smanager1")
+////            return
+////        }
+
         if (scores.isNotEmpty())
-            scores.forEach { scoreboards[it.key] = it.value }
+            scores.forEach { scoreboards[it.name] = it }
         else {
             createScoreboard("player", "&e&lPlayer")
             createScoreboard("helper", "&e&lHelper")
@@ -339,24 +369,28 @@ object ScoreboardManager {
             scoreboards["helper"]?.setColor("&e")
             scoreboards["trial"]?.setTemplate("", "player", "staff")
             scoreboards["trial"]?.addGroup(mutableListOf("helper", "trial", "mod"))
-            scoreboards["trial"]?.setColor("&e")
+            scoreboards["trial"]?.setColor("&d")
             scoreboards["mod"]?.setTemplate("", "player", "modstaff")
             scoreboards["mod"]?.addGroup(mutableListOf("admin"))
-            scoreboards["mod"]?.setColor("&d")
+            scoreboards["mod"]?.setColor("&2")
             scoreboards["admin"]?.setTemplate("supstaff", "admin", "modstaff")
             scoreboards["admin"]?.addGroup(mutableListOf("manager"))
-            scoreboards["admin"]?.setColor("&2")
+            scoreboards["admin"]?.setColor("&c")
             scoreboards["manager"]?.setTemplate("supstaff", "manager", "")
             scoreboards["manager"]?.addGroup(mutableListOf("helper", "trial", "mod", "admin", "manager", "owner"))
-            scoreboards["manager"]?.setColor("&c")
+            scoreboards["manager"]?.setColor("&4")
             scoreboards["owner"]?.setTemplate("supstaff", "owner", "")
             scoreboards["owner"]?.addGroup(mutableListOf("helper", "trial", "mod", "admin", "manager", "owner"))
-            scoreboards["owner"]?.setColor("&&")
+            scoreboards["owner"]?.setColor("&6")
         }
 
         initializePlayers()
     }
 
     // loaders - end
+
+    fun saveScoreboard() {
+        scoreboards.values.forEach { it.databaseUpdate() }
+    }
 // -------------------
 }

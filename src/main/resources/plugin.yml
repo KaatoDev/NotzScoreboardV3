@@ -1,7 +1,7 @@
 name: NotzScoreboard
-version: 3.2
-main: dev.kaato.notzscoreboard.Main
-softdepend: [PlaceholderAPI]
+version: '3.3'
+main: dev.kaato.notzscoreboard.NotzScoreboard
+softdepend: [ PlaceholderAPI, NotzAPI ]
 
 commands:
   nscoreboard:
