@@ -1,8 +1,12 @@
 package dev.kaato.notzscoreboard.commands
 
 import dev.kaato.notzapi.utils.MessageU.Companion.join
-import dev.kaato.notzscoreboard.Main.Companion.messageU
-import dev.kaato.notzscoreboard.Main.Companion.othersU
+import dev.kaato.notzscoreboard.NotzScoreboard.Companion.messageU
+import dev.kaato.notzscoreboard.NotzScoreboard.Companion.othersU
+import dev.kaato.notzscoreboard.entities.NotzPlayer
+import dev.kaato.notzscoreboard.manager.CommandsManager.convertDatabaseCMD
+import dev.kaato.notzscoreboard.manager.CommandsManager.removeOldDatabase
+import dev.kaato.notzscoreboard.manager.PlayerManager.players
 import dev.kaato.notzscoreboard.manager.PlayerManager.resetPlayer
 import dev.kaato.notzscoreboard.manager.PlayerManager.seePlayers
 import dev.kaato.notzscoreboard.manager.ScoreboardManager.addGroupTo
@@ -34,10 +38,10 @@ class NScoreboardC : TabExecutor {
     override fun onCommand(sender: CommandSender?, cmd: Command?, label: String?, args: Array<out String>?): Boolean {
         if (sender !is Player) return false
 
-        val p: Player = sender
+        val player: Player = sender
 
-        if (othersU.isntAdmin(p)) {
-            messageU.messageU.send(p, "no-perm")
+        if (othersU.isntAdmin(player)) {
+            messageU.messageU.send(player, "no-perm")
             return true
         }
 
@@ -46,8 +50,10 @@ class NScoreboardC : TabExecutor {
 
         when (a!!.size) {
             1 -> if (scoreboard == null) when (a[0]) {
+                "cleanolddatabase" -> removeOldDatabase(player)
+                "convert" -> convertDatabaseCMD(player, "all")
                 "list" -> messageU.sendHeader(
-                    p, "&6⧽ &eScoreboards:\n" +
+                    player, "&6⧽ &eScoreboards:\n" +
                             join(scoreboards.values.mapIndexed { index, it ->
                                 val str = if (scoreboards.size == 1) "⧽"
                                 else if (index == 0) "⎧"
@@ -57,159 +63,184 @@ class NScoreboardC : TabExecutor {
                             }, separator = "")
                 )
 
-                "players" -> seePlayers(p)
+                "players" -> seePlayers(player)
 
                 "reload" -> {
                     reload()
-                    messageU.send(p, "reload")
+                    messageU.send(player, "reload")
                 }
 
-                "update" -> updateAllScoreboards(p)
+                "update" -> updateAllScoreboards(player)
 
-                else -> help(p)
-            } else help(p, scoreboard)
+                else -> help(player)
+            } else help(player, scoreboard)
 
             2 -> if (scoreboard != null) when (a[1]) {
                 "clearheader" -> {
                     setTemplate(scoreboard, "")
-                    messageU.send(p, "clearHeader", display(scoreboard))
+                    messageU.send(player, "clearHeader", display(scoreboard))
                 }
 
                 "clearfooter" -> {
                     setTemplate(scoreboard, footer = "")
-                    messageU.send(p, "clearFooter", display(scoreboard))
+                    messageU.send(player, "clearFooter", display(scoreboard))
                 }
 
                 "cleartemplate" -> {
                     setTemplate(scoreboard, template = "")
-                    messageU.send(p, "clearTemplate", display(scoreboard))
+                    messageU.send(player, "clearTemplate", display(scoreboard))
                 }
 
-                "pause" -> pauseScoreboard(p, scoreboard)
+                "pause" -> pauseScoreboard(player, scoreboard)
 
-                "players" -> seePlayers(p, a[0])
+                "players" -> seePlayers(player, a[0])
 
-                "view" -> viewScoreboard(p, scoreboard)
+                "view" -> viewScoreboard(player, scoreboard)
 
-                "visiblegroups" -> seeVisibleGroups(p, scoreboard)
+                "visiblegroups" -> seeVisibleGroups(player, scoreboard)
 
-                else -> help(p, scoreboard)
+                else -> help(player, scoreboard)
 
             } else when (a[0]) {
+                "convert" -> convertDatabaseCMD(player, a[1])
                 "delete" -> {
                     val isDeleted = deleteScoreboard(a[1])
 
                     if (isDeleted != null) {
                         if (isDeleted)
-                            messageU.send(p, "delete1", a[1])
-                        else messageU.send(p, "delete2")
+                            messageU.send(player, "delete1", a[1])
+                        else messageU.send(player, "delete2")
 
-                    } else messageU.send(p, "delete3")
+                    } else messageU.send(player, "delete3")
                 }
 
                 "reset" -> if (Bukkit.getPlayerExact(a[1]) != null)
-                    resetPlayer(p, Bukkit.getPlayerExact(a[1]))
-                else messageU.send(p, "reset")
+                    resetPlayer(player, Bukkit.getPlayerExact(a[1]))
+                else messageU.send(player, "reset")
 
                 "set" -> if (scoreboards.containsKey(a[1]))
-                    addPlayerTo(p, p, a[1])
-                else messageU.send(p, "&cEsta scoreboard não existe!")
+                    addPlayerTo(player, player, a[1])
+                else messageU.send(player, "&cEsta scoreboard não existe!")
 
-                else -> help(p)
+                else -> help(player)
             }
 
             3 -> if (a[0] == "create") {
                 if (!blacklist.contains(a[1])) {
-                    if (!createScoreboard(a[1], args[2], p))
-                        messageU.send(p, "create1")
-                } else messageU.send(p, "create2")
+                    if (!createScoreboard(a[1], args[2], player))
+                        messageU.send(player, "create1")
+                } else messageU.send(player, "create2")
 
             } else if (scoreboard != null) when (a[1]) {
                 "addplayer" -> if (Bukkit.getPlayerExact(a[2]) != null)
-                    addPlayerTo(p, Bukkit.getPlayerExact(a[2]), scoreboard)
-                else messageU.send(p, "addplayer")
+                    addPlayerTo(player, Bukkit.getPlayerExact(a[2]), scoreboard)
+                else messageU.send(player, "addplayer")
 
                 "addgroup" -> if (scoreboards.containsKey(a[2]))
-                    addGroupTo(p, scoreboard, a[2])
-                else messageU.send(p, "addgroup")
+                    addGroupTo(player, scoreboard, a[2])
+                else messageU.send(player, "addgroup")
 
                 "pause" -> try {
-                    pauseScoreboard(p, scoreboard, a[2].toInt())
+                    pauseScoreboard(player, scoreboard, a[2].toInt())
                 } catch (e: ParseException) {
-                    messageU.send(p, "pause")
+                    messageU.send(player, "pause")
                 }
 
                 "remplayer" -> if (Bukkit.getPlayerExact(a[2]) != null)
-                    remPlayerFrom(p, Bukkit.getPlayerExact(a[2]), scoreboard)
-                else messageU.send(p, "remplayer")
+                    remPlayerFrom(player, Bukkit.getPlayerExact(a[2]), scoreboard)
+                else messageU.send(player, "remplayer")
 
                 "remgroup" -> if (scoreboards.containsKey(a[2]))
-                    remGroupFrom(p, scoreboard, a[2])
-                else messageU.send(p, "remgroup")
+                    remGroupFrom(player, scoreboard, a[2])
+                else messageU.send(player, "remgroup")
 
                 "setcolor" -> if (a[2].length == 2 && a[2].matches(Regex("&[a-f0-9]")))
-                    setColor(p, scoreboard, a[2])
-                else messageU.send(p, "setcolor")
+                    setColor(player, scoreboard, a[2])
+                else messageU.send(player, "setcolor")
 
-                "setdisplay" -> setDisplay(p, scoreboard, args[2])
+                "setdisplay" -> setDisplay(player, scoreboard, args[2])
 
-                "setheader" -> setTemplate(p, scoreboard, a[2])
+                "setheader" -> setTemplate(player, scoreboard, a[2])
 
-                "setfooter" -> setTemplate(p, scoreboard, footer = a[2])
+                "setfooter" -> setTemplate(player, scoreboard, footer = a[2])
 
-                "settemplate" -> setTemplate(p, scoreboard, template = a[2])
+                "settemplate" -> setTemplate(player, scoreboard, template = a[2])
 
-            } else help(p)
+            } else help(player)
 
             4 -> if (a[0] == "create") {
                 if (!blacklist.contains(a[1])) {
-                    if (createScoreboard(a[1], args[2], p)) {
+                    if (createScoreboard(a[1], args[2], player)) {
                         setTemplate(a[1], if (a[3] != "null") a[3] else null)
-                        messageU.send(p, "template")
+                        messageU.send(player, "template")
 
-                    } else messageU.send(p, "create1", a[1])
-                } else messageU.send(p, "create2")
+                    } else messageU.send(player, "create1", a[1])
+                } else messageU.send(player, "create2")
             }
 
             5 -> if (a[0] == "create") {
                 if (!blacklist.contains(a[1])) {
-                    if (createScoreboard(a[1], args[2], p)) {
+                    if (createScoreboard(a[1], args[2], player)) {
                         val header = if (a[3] != "null") a[3] else null
                         val template = if (a[4] != "null") a[4] else null
 
                         setTemplate(a[1], header, template)
-                        messageU.send(p, "template")
+                        messageU.send(player, "template")
 
-                    } else messageU.send(p, "create1", a[1])
-                } else messageU.send(p, "create2")
+                    } else messageU.send(player, "create1", a[1])
+                } else messageU.send(player, "create2")
             }
 
             6 -> if (a[0] == "create") {
                 if (!blacklist.contains(a[1])) {
-                    if (createScoreboard(a[1], args[2], p)) {
+                    if (createScoreboard(a[1], args[2], player)) {
                         val header = if (a[3] != "null") a[3] else null
                         val template = if (a[4] != "null") a[4] else null
                         val footer = if (a[5] != "null") a[5] else null
 
                         setTemplate(a[1], header, template, footer)
-                        messageU.send(p, "template")
+                        messageU.send(player, "template")
 
-                    } else messageU.send(p, "create1", a[1])
-                } else messageU.send(p, "create2")
+                    } else messageU.send(player, "create1", a[1])
+                } else messageU.send(player, "create2")
             }
 
-            else -> help(p, scoreboard)
+            else -> help(player, scoreboard)
         }
 
         return true
     }
 
     override fun onTabComplete(sender: CommandSender?, cmd: Command?, label: String?, args: Array<out String>?): MutableList<String> {
-        val a = args?.map { it.lowercase() }
+        val a = args?.map { it.lowercase() } ?: listOf()
+        val scoreboard = if (a.isNotEmpty()) scoreboards.containsKey(a[0]) else false
 
-        val scoreboard = if (a?.isNotEmpty() == true && scoreboards.containsKey(a[0])) scoreboards[a[0]] else null
+        return when (a.size) {
+            1 -> arrayOf("cleanOldDatabase", "convert", "create", "delete", "list", "players", "reload", "reset", "set", "update").filter { it.contains(a[0]) }.toMutableList()
+            
+            2 -> if (scoreboard) arrayOf("addplayer", "addgroup", "clearheader", "clearfooter", "cleartemplate", "pause", "players", "remplayer", "remgroup", "setcolor", "setdisplay", "setheader", "setfooter", "settemplate", "view", "visiblegroups").filter { it.contains(a[1]) }.toMutableList() else
+                when (a[0]) {
+                    "convert" -> mutableListOf("all", "<old_scoreboard>")
+                    "create" -> mutableListOf("<name>")
+                    "reset" -> players.values.map(NotzPlayer::name).toMutableList()
+                    "set" -> scoreboards.keys.toMutableList()
+                    else -> Collections.emptyList()
+                }
 
-        return Collections.emptyList()
+            3 -> if (scoreboard) when (a[1]) {
+                "addplayer", "remplayer" -> players.values.map(NotzPlayer::name).toMutableList()
+                "addgroup", "remgroup" -> scoreboards.keys.toMutableList()
+                else -> Collections.emptyList()
+            } else if (a[0] == "create") mutableListOf("<display>") else Collections.emptyList()
+
+
+            4 -> if (a[0] == "create") mutableListOf("<header>") else Collections.emptyList()
+            5 -> if (a[0] == "create") mutableListOf("<template>") else Collections.emptyList()
+            6 -> if (a[0] == "create") mutableListOf("<footer>") else Collections.emptyList()
+
+
+            else -> Collections.emptyList()
+        }
     }
 
     /**
@@ -223,6 +254,8 @@ class NScoreboardC : TabExecutor {
             messageU.sendHeader(
                 p, """
                 ${messageU.getMessage("commands.notzscoreboard")} &f/&enotzscoreboard &7+
+                &7+ &ecleanOldDatabase - Deletes the old database
+                &7+ &econvert &f<all&f/<&escoreboard&f>> &7- Convert all the old players and all or a specifically one of the old Scoreboards
                 &7+ &ecreate &f<&ename&f> &f<&edisplay&f> (&eheader&f) (&etemplate&f) (&efooter&f) &7- ${messageU.getMessage("commands.create")}
                 &7+ &edelete &f<&escoreboard&f> &7- ${messageU.getMessage("commands.delete")}
                 &7+ &elist &7- ${messageU.getMessage("commands.list")}
