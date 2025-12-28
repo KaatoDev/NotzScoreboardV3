@@ -2,9 +2,10 @@ package dev.kaato.notzscoreboard.manager
 
 import dev.kaato.notzapi.utils.MessageU.Companion.join
 import dev.kaato.notzscoreboard.NotzScoreboard.Companion.messageU
+import dev.kaato.notzscoreboard.database.DatabaseManager.containPlayerDB
 import dev.kaato.notzscoreboard.database.DatabaseManager.getPlayerByUUIDDB
 import dev.kaato.notzscoreboard.database.DatabaseManager.loadPlayersDB
-import dev.kaato.notzscoreboard.entities.NotzPlayer
+import dev.kaato.notzscoreboard.entities.NotzPlayerE
 import dev.kaato.notzscoreboard.entities.ScoreboardE
 import dev.kaato.notzscoreboard.manager.ScoreboardManager.checkVisibleGroupsBy
 import dev.kaato.notzscoreboard.manager.ScoreboardManager.containScoreboard
@@ -16,7 +17,7 @@ import org.bukkit.entity.Player
 import java.util.*
 
 object PlayerManager {
-    val players = hashMapOf<UUID, NotzPlayer>()
+    val players = hashMapOf<UUID, NotzPlayerE>()
 
     fun joinPlayer(player: Player) {
         if (players.containsKey(player.uniqueId)) {
@@ -46,35 +47,8 @@ object PlayerManager {
         else messageU.send(Bukkit.getConsoleSender(), "&cUnable to remove/assign a scoreboard to the player &f${player.name}&c. Error: pmanager2")
     }
 
-//    fun joinPlayer(player: Player) {
-//        val nPlayer = fastGetPlayer(player)
-//        players[player.uniqueId] = nPlayer
-//
-//        if (containScoreboard(nPlayer.getScoreboardId()))
-//            scoreboards.filterValues { it.id == nPlayer.getScoreboardId() }.values.let {
-//                if (it.isNotEmpty()) it.first().addPlayer(player)
-//            }
-//        else {
-//            val score = getDefaultScoreboard()
-//            println(default_group)
-//            score?.addPlayer(player)
-//            nPlayer.setScoreboardId(score?.id ?: 0)
-//        }
-//    }
-
-//    fun leavePlayer(player: Player) {
-//        val nPlayer = fastGetPlayer(player)
-//        if (players.containsKey(player.uniqueId))
-//            players.remove(player.uniqueId)
-//
-//        scoreboards.filterValues { it.id == nPlayer.getScoreboardId() }.values.let {
-//            if (it.isNotEmpty()) it.first().remPlayer(player)
-//        }
-//    }
-
-    fun fastGetPlayer(player: Player): NotzPlayer {
+    fun fastGetPlayer(player: Player): NotzPlayerE {
         return players.getOrDefault(player.uniqueId, getPlayerByUUIDDB(player.uniqueId))
-//        return players.getOrDefault(player.uniqueId, if (containPlayerDB(player.uniqueId)) getPlayerByUUIDDB(player.uniqueId) else NotzPlayer(player).let { players[player.uniqueId] = it; it })
     }
     
     fun checkPlayer(player: Player, scoreboard: ScoreboardE? = null, isDefault: Boolean = false) {
@@ -90,6 +64,7 @@ object PlayerManager {
         }
 
         if (scoreboard?.id == nPlayer.getScoreboardId()) return
+        
         getScoreboardByID(nPlayer.getScoreboardId())?.let {
             it.remPlayer(player)
             checkVisibleGroupsBy(it.name)
@@ -107,40 +82,6 @@ object PlayerManager {
         }
     }
 
-//    fun checkPlayer(player: Player, scoreboard: ScoreboardE? = null, isDefault: Boolean? = null) {
-//        if (scoreboard != null && !scoreboard.isDefault()) {
-//            if (players.containsKey(player.uniqueId) || containPlayerDB(player.uniqueId)) {
-//                val nPlayer = fastGetPlayer(player)
-//                
-//                if (containScoreboard(nPlayer.getScoreboardId()))
-//                    getScoreboardByID(nPlayer.getScoreboardId())?.remPlayer(player)
-//                
-//                nPlayer.setScoreboardId(scoreboard.id)
-//
-//            } else {
-//                val nPlayer = NotzPlayerE(player)
-//                nPlayer.setScoreboardId(scoreboard.id)
-//                scoreboards[default_group]!!.remPlayer(player)
-//            }
-//
-//            checkVisibleGroupsBy(scoreboard.name)
-//            val nPlayer = fastGetPlayer(player)
-//            nPlayer.setScoreboardId(scoreboard.id)
-//
-//        } else if (isDefault != null && !isDefault && players.containsKey(player.uniqueId)) {
-//            val nPlayer = fastGetPlayer(player)
-//
-//            getScoreboardByID(nPlayer.getScoreboardId()).let {
-//                if (it == null) return@let
-//                it.remPlayer(player)
-//                checkVisibleGroupsBy(it.name)
-//            }
-//            players.remove(player.uniqueId)
-//            nPlayer.delete()
-//            scoreboards[default_group]!!.addPlayer(player)
-//        }
-//    }
-
     fun resetPlayer(sender: Player, player: Player) {
         if (players.containsKey(player.uniqueId)) {
             checkPlayer(player, isDefault = false)
@@ -151,14 +92,6 @@ object PlayerManager {
 
     fun loadPlayers() {
         loadPlayersDB().forEach { players[it.uuid] = it }
-    }
-
-    fun addConvertedPlayers(cPlayers: List<NotzPlayer>): Int {
-        cPlayers.forEach {
-            if (!players.containsKey(it.uuid)) players[it.uuid] = it
-        }
-
-        return cPlayers.size
     }
 
     fun initializePlayers() {

@@ -5,27 +5,27 @@ plugins {
 }
 
 group = "dev.kaato"
-version = "3.3"
+version = "3.4-pre1"
 
 repositories {
     mavenCentral()
     mavenLocal()
-    maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots/") {
-        name = "spigotmc-repo"
+    maven("https://repo.papermc.io/repository/maven-public/") {
+        name = "papermc-repo"
     }
-    maven("https://oss.sonatype.org/content/repositories/snapshots/")
-    maven("https://oss.sonatype.org/content/groups/public/") {
-        name = "sonatype"
-    }
-    maven("https://maven.elmakers.com/repository/") {
-        name = "elmakers-repo"
-    }
+//    maven("https://oss.sonatype.org/content/repositories/snapshots/")
+//    maven("https://oss.sonatype.org/content/groups/public/") {
+//        name = "sonatype"
+//    }
+//    maven("https://maven.elmakers.com/repository/") {
+//        name = "elmakers-repo"
+//    }
     maven("https://repo.extendedclip.com/releases/")
-    maven("https://jitpack.io")
+//    maven("https://jitpack.io")
 }
 
 dependencies {
-    compileOnly("org.spigotmc:spigot-api:1.12.2-R0.1-SNAPSHOT")
+    compileOnly("io.papermc.paper:paper-api:1.21.11-R0.1-SNAPSHOT")
     compileOnly("me.clip:placeholderapi:2.11.7")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("dev.kaato:NotzAPI:0.4.8")
@@ -36,11 +36,20 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-dao:0.61.0")
     implementation("org.jetbrains.exposed:exposed-java-time:0.61.0")
     implementation("org.jetbrains.exposed:exposed-json:0.61.0")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
+//    runtimeOnly("org.jetbrains.kotlinx:kotlinx-serialization-json:1.10.0-RC")
     implementation("org.bstats:bstats-bukkit:3.1.0")
 }
 
-val targetJavaVersion = 8
+tasks {
+    runServer {
+        // Configure the Minecraft version for our task.
+        // This is the only required configuration besides applying the plugin.
+        // Your plugin's jar (or shadowJar if present) will be used automatically.
+        minecraftVersion("1.21")
+    }
+}
+
+val targetJavaVersion = 21
 kotlin {
     jvmToolchain(targetJavaVersion)
 }

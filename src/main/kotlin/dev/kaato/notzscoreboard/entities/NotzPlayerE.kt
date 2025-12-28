@@ -8,7 +8,7 @@ import org.bukkit.entity.Player
 import java.time.LocalDateTime
 import java.util.*
 
-class NotzPlayer(val id: Int) {
+class NotzPlayerE(val id: Int) {
     constructor(player: Player) : this(insertPlayerDB(player))
 
     val name: String
@@ -26,7 +26,6 @@ class NotzPlayer(val id: Int) {
         updated = notzPlayer.updated
     }
 
-    fun getUpdated() = updated
     fun getScoreboardId() = scoreboardId
     fun setScoreboardId(newScoreboardId: Int) {
         scoreboardId = newScoreboardId

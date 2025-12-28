@@ -40,11 +40,11 @@ object ScoreboardManager {
     // scoreboard - start
 
     fun getScoreboardByID(id: Int): ScoreboardE? {
-        return scoreboards.filterValues { it.id == id }.values.first()
+        return scoreboards.filterValues { it.id == id }.values.firstOrNull()
     }
 
     fun getScoreboard(name: String): ScoreboardE? {
-        return scoreboards.filterKeys { it == name }.values.first()
+        return scoreboards.filterKeys { it == name }.values.firstOrNull()
     }
 
     fun containScoreboard(id: Int): Boolean {
@@ -203,8 +203,8 @@ object ScoreboardManager {
     // geral - start
 
     fun reload() {
-        plugin.pluginLoader.disablePlugin(plugin)
-        plugin.pluginLoader.enablePlugin(plugin)
+        plugin.server.pluginManager.disablePlugin(plugin)
+        plugin.server.pluginManager.enablePlugin(plugin)
     }
 
     fun updateAllScoreboards(p: Player) {
@@ -222,7 +222,7 @@ object ScoreboardManager {
 
     fun getPlayerFromGroup(visibleGroups: List<String>): String {
         val playerList = getPlayersFromGroups(visibleGroups)
-        return playerList[Random.nextInt(playerList.size)].name!!
+        return playerList[Random.nextInt(playerList.size)].name
     }
 
     fun getPlayersFromGroups(visibleGroups: List<String>): List<Player> {
@@ -255,7 +255,7 @@ object ScoreboardManager {
         loadPlaceholders()
 
         val templatesConfig = sf.config.getMapList("templates")
-        default_group = sf.config.getString("default-group")
+        default_group = sf.config.getString("default-group")?:""
         arrayOf("low", "medium", "high").forEach { priorityList[it] = PriorityClass(null, sf.config.getLong("priority-time.$it") * 20) }
 
         templatesConfig.forEach { map ->
@@ -280,7 +280,7 @@ object ScoreboardManager {
 
         placeholderManager.addPlaceholders(
             hashMapOf(
-                "{title}" to { sf.config.getString("title") },
+                "{title}" to { sf.config.getString("title")?:"[NotzScoreboard]" },
 
                 "{rank}" to { p: Any? ->
                     var rank = "&7Sem rank."
@@ -336,14 +336,6 @@ object ScoreboardManager {
             ))
     }
 
-    fun addConvertedScoreboards(cExcavators: List<ScoreboardE>): Int {
-        cExcavators.forEach {
-            if (!scoreboards.containsKey(it.name)) scoreboards[it.name] = it
-        }
-
-        return cExcavators.size
-    }
-
     private fun loadScoreboards() {
         val scores = loadScoreboardsDB()
         loadPlayers()
@@ -389,7 +381,7 @@ object ScoreboardManager {
 
     // loaders - end
 
-    fun saveScoreboard() {
+    fun saveScoreboards() {
         scoreboards.values.forEach { it.databaseUpdate() }
     }
 // -------------------

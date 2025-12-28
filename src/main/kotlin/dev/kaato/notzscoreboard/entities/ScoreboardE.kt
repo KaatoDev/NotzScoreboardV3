@@ -1,10 +1,10 @@
 package dev.kaato.notzscoreboard.entities
 
 import dev.kaato.notzapi.utils.MessageU.Companion.c
-import dev.kaato.notzscoreboard.NotzScoreboard
 import dev.kaato.notzscoreboard.NotzScoreboard.Companion.messageU
 import dev.kaato.notzscoreboard.NotzScoreboard.Companion.placeholderManager
 import dev.kaato.notzscoreboard.NotzScoreboard.Companion.plugin
+import dev.kaato.notzscoreboard.NotzScoreboard.Companion.sf
 import dev.kaato.notzscoreboard.database.DatabaseManager.deleteScoreboardDB
 import dev.kaato.notzscoreboard.database.DatabaseManager.getScoreboardDB
 import dev.kaato.notzscoreboard.database.DatabaseManager.insertScoreboardDB
@@ -14,10 +14,12 @@ import dev.kaato.notzscoreboard.manager.ScoreboardManager.default_group
 import dev.kaato.notzscoreboard.manager.ScoreboardManager.getPlayerFromGroup
 import dev.kaato.notzscoreboard.manager.ScoreboardManager.getPlayersFromGroups
 import dev.kaato.notzscoreboard.manager.ScoreboardManager.scoreboards
+import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.scheduler.BukkitRunnable
 import org.bukkit.scheduler.BukkitTask
+import org.bukkit.scoreboard.Criteria
 import org.bukkit.scoreboard.DisplaySlot
 import java.time.LocalDateTime
 import kotlin.random.Random
@@ -233,7 +235,7 @@ class ScoreboardE(val id: Int) {
 
     /** Updates the {staff_(scoreboard)} and the {(scoreboard)_list} palceholders. */
     private fun updatePlaceholder() {
-        val player = if (players.isNotEmpty()) players[Random.nextInt(players.size)].name!! else messageU.getMessage("status.offline")
+        val player = if (players.isNotEmpty()) players[Random.nextInt(players.size)].name else messageU.getMessage("status.offline")
 
         placeholderManager.addPlaceholder("{staff_$name}", player)
         placeholderManager.addPlaceholder("{${name}_list}", players.size.toString())
@@ -247,7 +249,7 @@ class ScoreboardE(val id: Int) {
 
     /** Update the players' scoreboard or create a new scoreboard if necessary */
     private fun updatePlayer(player: Player) {
-        if (player.scoreboard?.getObjective(name) == null)
+        if (player.scoreboard.getObjective(name) == null)
             scoreboardCreate(player)
         else scoreboardUpdate(player)
 
@@ -285,9 +287,15 @@ class ScoreboardE(val id: Int) {
     /** Sets the scoreboard on the player */
     private fun scoreboardCreate(player: Player) {
         val scoreboard = Bukkit.getScoreboardManager().newScoreboard
-        val objective = scoreboard.registerNewObjective(name, "yummy")
+        val objective = try {
+            scoreboard.registerNewObjective(name, Criteria.DUMMY, Component.text(placeholderManager.set(sf.config.getString("title") ?: "")))
+        } catch (v1o12: NoClassDefFoundError) {
+            scoreboard.registerNewObjective(name, "DUMMY").let {
+                it.displayName = placeholderManager.set(sf.config.getString("title") ?: "")
+                it
+            }
+        }
         objective.displaySlot = DisplaySlot.SIDEBAR
-        objective.displayName = placeholderManager.set(NotzScoreboard.Companion.sf.config.getString("title"))
 
         linesList.forEachIndexed { i, line ->
             val r = if (line.contains("{")) 0 else if (line.contains("%")) 1 else null
@@ -320,7 +328,11 @@ class ScoreboardE(val id: Int) {
                     suffix = c("Suffix too large")
 
                 team.addEntry(prefix)
-                team.suffix = suffix
+                try {
+                    team.suffix(Component.text(suffix))
+                } catch (v1o12: NoClassDefFoundError) {
+                    team.suffix = suffix
+                }
 
                 objective.getScore(prefix).score = index
 
@@ -333,7 +345,7 @@ class ScoreboardE(val id: Int) {
 
         try {
             player.scoreboard = scoreboard
-        } catch (e: Exception) {
+        } catch (e: NoClassDefFoundError) {
             throw e
         }
     }
@@ -363,7 +375,13 @@ class ScoreboardE(val id: Int) {
                 if (suffix.length > 16)
                     suffix = c("Suffix too large")
 
-                player.scoreboard.getTeam(name + index).suffix = suffix
+                player.scoreboard.getTeam(name + index)?.let {
+                    try {
+                        it.suffix(Component.text(suffix))
+                    } catch (v1o12: NoClassDefFoundError) {
+                        it.suffix = suffix
+                    }
+                }
             }
         }
     }
@@ -410,7 +428,7 @@ class ScoreboardE(val id: Int) {
 
     /** Run the self-update scoreboard task. */
     private fun runTask() {
-        val time = (if (NotzScoreboard.Companion.sf.config.contains("priority-time.$name")) NotzScoreboard.Companion.sf.config.getLong("priority-time.$name") else 20) * 20
+        val time = (if (sf.config.contains("priority-time.$name")) sf.config.getLong("priority-time.$name") else 20) * 20
 
         task = object : BukkitRunnable() {
             override fun run() {
@@ -428,9 +446,9 @@ class ScoreboardE(val id: Int) {
     fun forceCancelTask() {
         try {
             task?.cancel()
-            messageU.send(Bukkit.getConsoleSender(), "&a&lCancelamento à força da task da &bscoreboard &l${name} &f(${display}&f) &a&lrealizado!!!")
+            messageU.send(Bukkit.getConsoleSender(), "&a&lForcible cancellation of the &bscoreboard &l${name} &f(${display}&f) &a&ltask completed!!!")
         } catch (e: Exception) {
-            messageU.send(Bukkit.getConsoleSender(), "&c&lFalha ao forçar cancelamento da task da &bscoreboard &l${name} &f(${display}&f)&c&l!!!")
+            messageU.send(Bukkit.getConsoleSender(), "&c&lFailed to force cancellation of the &bscoreboard &l${name} &f(${display}&f) &c&ltask!!!")
             throw e
         }
     }

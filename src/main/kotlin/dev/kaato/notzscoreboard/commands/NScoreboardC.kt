@@ -3,9 +3,7 @@ package dev.kaato.notzscoreboard.commands
 import dev.kaato.notzapi.utils.MessageU.Companion.join
 import dev.kaato.notzscoreboard.NotzScoreboard.Companion.messageU
 import dev.kaato.notzscoreboard.NotzScoreboard.Companion.othersU
-import dev.kaato.notzscoreboard.entities.NotzPlayer
-import dev.kaato.notzscoreboard.manager.CommandsManager.convertDatabaseCMD
-import dev.kaato.notzscoreboard.manager.CommandsManager.removeOldDatabase
+import dev.kaato.notzscoreboard.entities.NotzPlayerE
 import dev.kaato.notzscoreboard.manager.PlayerManager.players
 import dev.kaato.notzscoreboard.manager.PlayerManager.resetPlayer
 import dev.kaato.notzscoreboard.manager.PlayerManager.seePlayers
@@ -35,7 +33,7 @@ import java.text.ParseException
 import java.util.*
 
 class NScoreboardC : TabExecutor {
-    override fun onCommand(sender: CommandSender?, cmd: Command?, label: String?, args: Array<out String>?): Boolean {
+    override fun onCommand(sender: CommandSender, cmd: Command, label: String, args: Array<out String>): Boolean {
         if (sender !is Player) return false
 
         val player: Player = sender
@@ -45,22 +43,19 @@ class NScoreboardC : TabExecutor {
             return true
         }
 
-        val a = args?.map { it.lowercase() }
-        val scoreboard = if (a?.isNotEmpty() == true && scoreboards.containsKey(a[0])) a[0] else null
+        val a = args.map { it.lowercase() }
+        val scoreboard = if (a.isNotEmpty() && scoreboards.containsKey(a[0])) a[0] else null
 
-        when (a!!.size) {
+        when (a.size) {
             1 -> if (scoreboard == null) when (a[0]) {
-                "cleanolddatabase" -> removeOldDatabase(player)
-                "convert" -> convertDatabaseCMD(player, "all")
                 "list" -> messageU.sendHeader(
-                    player, "&6⧽ &eScoreboards:\n" +
-                            join(scoreboards.values.mapIndexed { index, it ->
-                                val str = if (scoreboards.size == 1) "⧽"
-                                else if (index == 0) "⎧"
-                                else if (index == scoreboards.size - 1) "⎩"
-                                else "⎜"
-                                "&e$str &f${it.name}&e: &f${it.getDisplay()}\n"
-                            }, separator = "")
+                    player, "&6⧽ &eScoreboards:\n" + join(scoreboards.values.mapIndexed { index, it ->
+                        val str = if (scoreboards.size == 1) "⧽"
+                        else if (index == 0) "⎧"
+                        else if (index == scoreboards.size - 1) "⎩"
+                        else "⎜"
+                        "&e$str &f${it.name}&e: &f${it.getDisplay()}\n"
+                    }, separator = "")
                 )
 
                 "players" -> seePlayers(player)
@@ -102,24 +97,20 @@ class NScoreboardC : TabExecutor {
                 else -> help(player, scoreboard)
 
             } else when (a[0]) {
-                "convert" -> convertDatabaseCMD(player, a[1])
                 "delete" -> {
                     val isDeleted = deleteScoreboard(a[1])
 
                     if (isDeleted != null) {
-                        if (isDeleted)
-                            messageU.send(player, "delete1", a[1])
+                        if (isDeleted) messageU.send(player, "delete1", a[1])
                         else messageU.send(player, "delete2")
 
                     } else messageU.send(player, "delete3")
                 }
 
-                "reset" -> if (Bukkit.getPlayerExact(a[1]) != null)
-                    resetPlayer(player, Bukkit.getPlayerExact(a[1]))
+                "reset" -> if (Bukkit.getPlayerExact(a[1]) != null) resetPlayer(player, Bukkit.getPlayerExact(a[1])!!)
                 else messageU.send(player, "reset")
 
-                "set" -> if (scoreboards.containsKey(a[1]))
-                    addPlayerTo(player, player, a[1])
+                "set" -> if (scoreboards.containsKey(a[1])) addPlayerTo(player, player, a[1])
                 else messageU.send(player, "&cEsta scoreboard não existe!")
 
                 else -> help(player)
@@ -127,17 +118,14 @@ class NScoreboardC : TabExecutor {
 
             3 -> if (a[0] == "create") {
                 if (!blacklist.contains(a[1])) {
-                    if (!createScoreboard(a[1], args[2], player))
-                        messageU.send(player, "create1")
+                    if (!createScoreboard(a[1], args[2], player)) messageU.send(player, "create1")
                 } else messageU.send(player, "create2")
 
             } else if (scoreboard != null) when (a[1]) {
-                "addplayer" -> if (Bukkit.getPlayerExact(a[2]) != null)
-                    addPlayerTo(player, Bukkit.getPlayerExact(a[2]), scoreboard)
+                "addplayer" -> if (Bukkit.getPlayerExact(a[2]) != null) addPlayerTo(player, Bukkit.getPlayerExact(a[2])!!, scoreboard)
                 else messageU.send(player, "addplayer")
 
-                "addgroup" -> if (scoreboards.containsKey(a[2]))
-                    addGroupTo(player, scoreboard, a[2])
+                "addgroup" -> if (scoreboards.containsKey(a[2])) addGroupTo(player, scoreboard, a[2])
                 else messageU.send(player, "addgroup")
 
                 "pause" -> try {
@@ -146,16 +134,13 @@ class NScoreboardC : TabExecutor {
                     messageU.send(player, "pause")
                 }
 
-                "remplayer" -> if (Bukkit.getPlayerExact(a[2]) != null)
-                    remPlayerFrom(player, Bukkit.getPlayerExact(a[2]), scoreboard)
+                "remplayer" -> if (Bukkit.getPlayerExact(a[2]) != null) remPlayerFrom(player, Bukkit.getPlayerExact(a[2])!!, scoreboard)
                 else messageU.send(player, "remplayer")
 
-                "remgroup" -> if (scoreboards.containsKey(a[2]))
-                    remGroupFrom(player, scoreboard, a[2])
+                "remgroup" -> if (scoreboards.containsKey(a[2])) remGroupFrom(player, scoreboard, a[2])
                 else messageU.send(player, "remgroup")
 
-                "setcolor" -> if (a[2].length == 2 && a[2].matches(Regex("&[a-f0-9]")))
-                    setColor(player, scoreboard, a[2])
+                "setcolor" -> if (a[2].length == 2 && a[2].matches(Regex("&[a-f0-9]"))) setColor(player, scoreboard, a[2])
                 else messageU.send(player, "setcolor")
 
                 "setdisplay" -> setDisplay(player, scoreboard, args[2])
@@ -211,24 +196,22 @@ class NScoreboardC : TabExecutor {
         return true
     }
 
-    override fun onTabComplete(sender: CommandSender?, cmd: Command?, label: String?, args: Array<out String>?): MutableList<String> {
-        val a = args?.map { it.lowercase() } ?: listOf()
+    override fun onTabComplete(sender: CommandSender, cmd: Command, label: String, args: Array<out String>): MutableList<String> {
+        val a = args.map { it.lowercase() } 
         val scoreboard = if (a.isNotEmpty()) scoreboards.containsKey(a[0]) else false
 
         return when (a.size) {
-            1 -> arrayOf("cleanOldDatabase", "convert", "create", "delete", "list", "players", "reload", "reset", "set", "update").filter { it.contains(a[0]) }.toMutableList()
-            
-            2 -> if (scoreboard) arrayOf("addplayer", "addgroup", "clearheader", "clearfooter", "cleartemplate", "pause", "players", "remplayer", "remgroup", "setcolor", "setdisplay", "setheader", "setfooter", "settemplate", "view", "visiblegroups").filter { it.contains(a[1]) }.toMutableList() else
-                when (a[0]) {
-                    "convert" -> mutableListOf("all", "<old_scoreboard>")
-                    "create" -> mutableListOf("<name>")
-                    "reset" -> players.values.map(NotzPlayer::name).toMutableList()
-                    "set" -> scoreboards.keys.toMutableList()
-                    else -> Collections.emptyList()
-                }
+            1 -> arrayOf("create", "delete", "list", "players", "reload", "reset", "set", "update").filter { it.contains(a[0]) }.toMutableList()
+
+            2 -> if (scoreboard) arrayOf("addplayer", "addgroup", "clearheader", "clearfooter", "cleartemplate", "pause", "players", "remplayer", "remgroup", "setcolor", "setdisplay", "setheader", "setfooter", "settemplate", "view", "visiblegroups").filter { it.contains(a[1]) }.toMutableList() else when (a[0]) {
+                "create" -> mutableListOf("<name>")
+                "reset" -> players.values.map(NotzPlayerE::name).toMutableList()
+                "set" -> scoreboards.keys.toMutableList()
+                else -> Collections.emptyList()
+            }
 
             3 -> if (scoreboard) when (a[1]) {
-                "addplayer", "remplayer" -> players.values.map(NotzPlayer::name).toMutableList()
+                "addplayer", "remplayer" -> players.values.map(NotzPlayerE::name).toMutableList()
                 "addgroup", "remgroup" -> scoreboards.keys.toMutableList()
                 else -> Collections.emptyList()
             } else if (a[0] == "create") mutableListOf("<display>") else Collections.emptyList()
@@ -250,12 +233,9 @@ class NScoreboardC : TabExecutor {
      * Send the commands' instructions to the player.
      */
     private fun help(p: Player, scoreboard: String? = null) {
-        if (scoreboard == null)
-            messageU.sendHeader(
-                p, """
+        if (scoreboard == null) messageU.sendHeader(
+            p, """
                 ${messageU.getMessage("commands.notzscoreboard")} &f/&enotzscoreboard &7+
-                &7+ &ecleanOldDatabase - Deletes the old database
-                &7+ &econvert &f<all&f/<&escoreboard&f>> &7- Convert all the old players and all or a specifically one of the old Scoreboards
                 &7+ &ecreate &f<&ename&f> &f<&edisplay&f> (&eheader&f) (&etemplate&f) (&efooter&f) &7- ${messageU.getMessage("commands.create")}
                 &7+ &edelete &f<&escoreboard&f> &7- ${messageU.getMessage("commands.delete")}
                 &7+ &elist &7- ${messageU.getMessage("commands.list")}
@@ -265,7 +245,7 @@ class NScoreboardC : TabExecutor {
                 &7+ &eset &f<&escoreboard&f> &7- ${messageU.getMessage("commands.set")}
                 &7+ &eupdate &7- ${messageU.getMessage("commands.update")}
             """.trimIndent()
-            )
+        )
         else messageU.sendHeader(
             p, """
             &f/&enotzsb &a${scoreboard} &7+

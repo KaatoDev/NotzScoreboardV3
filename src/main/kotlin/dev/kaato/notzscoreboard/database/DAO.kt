@@ -16,8 +16,8 @@ class DAO {
     private val port = cf.config.getString("mysql.port")
     private val mysqlDB = cf.config.getString("mysql.database")
     private val database = if (useMysql) "//$host:$port/${mysqlDB}" else "$pathRaw/notzscoreboard.db"
-    private val user = cf.config.getString("mysql.user")
-    private val password = cf.config.getString("mysql.password")
+    private val user = cf.config.getString("mysql.user")?:""
+    private val password = cf.config.getString("mysql.password")?:""
 
     fun init() {
         try {

@@ -53,7 +53,7 @@ class NotzScoreboard : JavaPlugin() {
 
             notzAPI = Bukkit.getServicesManager().load(NotzAPI::class.java)
             napi = addPlugin(plugin)
-            napi.version = "3.3"
+            napi.version = "3.4-pre1"
 
             messageManager = napi.messageManager
             itemManager = napi.itemManager
@@ -95,7 +95,7 @@ class NotzScoreboard : JavaPlugin() {
     }
 
     private fun regCommands() {
-        getCommand("nscoreboard").executor = NScoreboardC()
+        getCommand("nscoreboard")?.setExecutor(NScoreboardC())
     }
 
     private fun regEvents() {
@@ -103,7 +103,7 @@ class NotzScoreboard : JavaPlugin() {
     }
 
     private fun regTabs() {
-        getCommand("nscoreboard").tabCompleter = NScoreboardC()
+        getCommand("nscoreboard")?.tabCompleter = NScoreboardC()
     }
 
     private fun letters() {
@@ -135,7 +135,7 @@ class NotzScoreboard : JavaPlugin() {
 
     override fun onDisable() {
         removePlugin(plugin)
-//        saveScoreboard()
+//        saveScoreboards()
         savePlayers()
         shutdown()
     }

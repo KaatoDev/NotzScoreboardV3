@@ -1,15 +1,11 @@
 package dev.kaato.notzscoreboard.database
 
 import dev.kaato.notzapi.utils.MessageU.Companion.log
-import dev.kaato.notzscoreboard.converter.DatabaseManagerConverter
-import dev.kaato.notzscoreboard.converter.DatabaseManagerConverter.closeConverterDB
-import dev.kaato.notzscoreboard.converter.DatabaseManagerConverter.dropTablesConverterDB
-import dev.kaato.notzscoreboard.converter.DatabaseManagerConverter.hasTablesConverterDB
 import dev.kaato.notzscoreboard.entities.*
-import dev.kaato.notzscoreboard.manager.PlayerManager.players
 import dev.kaato.notzscoreboard.manager.ScoreboardManager.getDefaultScoreboardId
-import dev.kaato.notzscoreboard.manager.ScoreboardManager.getScoreboard
-import org.bukkit.Bukkit
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonPrimitive
 import org.bukkit.entity.Player
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.deleteWhere
@@ -17,8 +13,8 @@ import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
-import org.json.simple.JSONArray
-import org.json.simple.parser.JSONParser
+//import org.json.simple.JSONArray
+//import org.json.simple.parser.JSONParser
 import java.time.LocalDateTime
 import java.util.*
 
@@ -60,15 +56,15 @@ object DatabaseManager {
         }
     }
 
-    fun getPlayerByUUIDDB(uuid: UUID): NotzPlayer {
+    fun getPlayerByUUIDDB(uuid: UUID): NotzPlayerE {
         return transaction {
             Players.selectAll().where { Players.playerUuid eq uuid }.first().let {
-                NotzPlayer(it[Players.id])
+                NotzPlayerE(it[Players.id])
             }
         }
     }
 
-    fun updatePlayerDB(player: NotzPlayer) {
+    fun updatePlayerDB(player: NotzPlayerE) {
         transaction {
             Players.update({ Players.id eq player.id }) {
                 it[name] = player.name
@@ -93,8 +89,8 @@ object DatabaseManager {
         }
     }
 
-    fun loadPlayersDB(): List<NotzPlayer> {
-        return transaction { Players.select(Players.id).map { NotzPlayer(it[Players.id]) } }
+    fun loadPlayersDB(): List<NotzPlayerE> {
+        return transaction { Players.select(Players.id).map { NotzPlayerE(it[Players.id]) } }
     }
 
     fun containPlayerDB(uuid: UUID): Boolean {
@@ -125,25 +121,10 @@ object DatabaseManager {
         return id
     }
 
-    fun insertScoreboardConvertedDB(scoreboard: ScoreboardModel): Int {
-        val id = transaction {
-            Scoreboards.insert {
-                it[this.name] = scoreboard.name
-                it[this.display] = scoreboard.display
-                it[this.color] = scoreboard.color
-                it[this.header] = scoreboard.header
-                it[this.template] = scoreboard.template
-                it[this.footer] = scoreboard.footer
-                it[this.visibleGroups] = parseToJson(scoreboard.visibleGroups)
-            } get Scoreboards.id
-        }
-        return id
-    }
-
-    fun getScoreboardDB(id: Int): ScoreboardModelNew {
+    fun getScoreboardDB(id: Int): ScoreboardModel {
         return transaction {
             Scoreboards.selectAll().where { Scoreboards.id eq id }.first().let {
-                ScoreboardModelNew(
+                ScoreboardModel(
                     it[Scoreboards.id],
                     it[Scoreboards.name],
                     it[Scoreboards.display],
@@ -168,21 +149,6 @@ object DatabaseManager {
                 it[footer] = scoreboard.getFooter()
                 it[color] = scoreboard.getColor()
                 it[visibleGroups] = parseToJson(scoreboard.getVisibleGroups())
-                it[updated] = LocalDateTime.now()
-            }
-        }
-    }
-
-    fun updateScoreboardConverterDB(scoreboard: ScoreboardModel) {
-        transaction {
-            Scoreboards.update({ Scoreboards.name eq scoreboard.name }) {
-                it[name] = scoreboard.name
-                it[display] = scoreboard.display
-                it[header] = scoreboard.header
-                it[template] = scoreboard.template
-                it[footer] = scoreboard.footer
-                it[color] = scoreboard.color
-                it[visibleGroups] = parseToJson(scoreboard.visibleGroups)
                 it[updated] = LocalDateTime.now()
             }
         }
@@ -220,55 +186,21 @@ object DatabaseManager {
 
 
     fun parseToJson(list: List<String>): String {
-        val arr = JSONArray()
-        list.forEach { arr.add(it) }
-        return arr.toJSONString()
+        val arr = JsonArray(list.map { JsonPrimitive(it) })
+        return arr.toString()
     }
+
+//    fun parseToJson(list: List<String>): String {
+//        val arr = JSONArray()
+//        list.forEach { arr.add(it) }
+//        return arr.toJSONString()
+//    }
 
     fun parseMaterialList(json: String): List<String> {
-        return (JSONParser().parse(json) as JSONArray).map { it as String }
+        return Json.decodeFromString(json)
     }
 
-
-    fun checkOldDatabase() = hasTablesConverterDB()
-
-    fun eraseOldDatabase() {
-        dropTablesConverterDB()
-        closeConverterDB()
-    }
-
-    fun convertPlayersDatabase(): List<NotzPlayer> {
-        val pls = DatabaseManagerConverter.loadPlayersDatabase()
-        val plIds = mutableListOf<Int>()
-
-        pls.forEach {
-            val player = Bukkit.getOfflinePlayer(it.key) ?: return@forEach
-            if (containPlayerDB(player.uniqueId))
-                (players[player.uniqueId] ?: getPlayerByUUIDDB(player.uniqueId)).let { notzPlayer ->
-                    val score = getScoreboard(it.value)
-                    if (score != null) {
-                        notzPlayer.setScoreboardId(score.id)
-                        updatePlayerDB(notzPlayer)
-                    } else deletePlayerDB(notzPlayer.id)
-                }
-            else plIds.add(insertPlayerDB(player.name, player.uniqueId))
-        }
-
-        return plIds.map(::NotzPlayer)
-    }
-
-    fun convertScoreboardsDatabase(onlyScoreboard: String): List<ScoreboardE> {
-        val sbs = DatabaseManagerConverter.loadScoreboardsDatabase()
-        val sbIds = mutableListOf<Int>()
-
-        sbs?.values?.forEach {
-            if (onlyScoreboard != "all" && onlyScoreboard.isNotEmpty() && it.name != onlyScoreboard) return@forEach
-
-            if (containScoreboardDB(it.name))
-                updateScoreboardConverterDB(it)
-            else sbIds.add(insertScoreboardConvertedDB(it))
-        }
-
-        return sbIds.map(::ScoreboardE)
-    }
+//    fun parseMaterialList(json: String): List<String> {
+//        return (JSONParser().parse(json) as JSONArray).map { it as String }
+//    }
 }

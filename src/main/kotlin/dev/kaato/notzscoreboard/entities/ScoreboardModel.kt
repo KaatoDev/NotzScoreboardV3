@@ -1,13 +1,16 @@
 package dev.kaato.notzscoreboard.entities
 
-import java.io.Serializable
+import java.time.LocalDateTime
 
 data class ScoreboardModel(
+    val id: Int,
     val name: String,
     val display: String,
     val header: String,
     val template: String,
     val footer: String,
     val color: String,
-    val visibleGroups: MutableList<String>,
-) : Serializable
+    val visibleGroups: List<String>,
+    val created: LocalDateTime,
+    val updated: LocalDateTime?
+)
