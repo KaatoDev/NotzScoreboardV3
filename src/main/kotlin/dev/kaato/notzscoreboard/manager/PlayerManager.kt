@@ -76,65 +76,67 @@ object PlayerManager {
         return players.getOrDefault(player.uniqueId, getPlayerByUUIDDB(player.uniqueId))
 //        return players.getOrDefault(player.uniqueId, if (containPlayerDB(player.uniqueId)) getPlayerByUUIDDB(player.uniqueId) else NotzPlayer(player).let { players[player.uniqueId] = it; it })
     }
+    
+    fun checkPlayer(player: Player, scoreboard: ScoreboardE? = null, isDefault: Boolean = false) {
+        val containNPLayer = players.containsKey(player.uniqueId) || containPlayerDB(player.uniqueId)
 
+        if (isDefault && !containNPLayer) return
 
-    fun checkPlayer(player: Player, scoreboard: ScoreboardE? = null, isDefault: Boolean? = null) {
+        val nPlayer = if (players.containsKey(player.uniqueId) || containPlayerDB(player.uniqueId))
+            fastGetPlayer(player)
+        else {
+            scoreboards[default_group]!!.remPlayer(player)
+            NotzPlayerE(player)
+        }
+
+        if (scoreboard?.id == nPlayer.getScoreboardId()) return
+        getScoreboardByID(nPlayer.getScoreboardId())?.let {
+            it.remPlayer(player)
+            checkVisibleGroupsBy(it.name)
+        }
+
         if (scoreboard != null && !scoreboard.isDefault()) {
-            if (players.containsKey(player.uniqueId)) {
-                val nPlayer = fastGetPlayer(player)
-
-                nPlayer.setScoreboardId(scoreboard.id)
-
-                if (containScoreboard(nPlayer.getScoreboardId()))
-                    getScoreboardByID(nPlayer.getScoreboardId())?.remPlayer(player)
-
-            } else {
-                val nPlayer = NotzPlayer(player)
-                nPlayer.setScoreboardId(scoreboard.id)
-                scoreboards[default_group]!!.remPlayer(player)
-            }
-
-            checkVisibleGroupsBy(scoreboard.name)
-            val nPlayer = fastGetPlayer(player)
             nPlayer.setScoreboardId(scoreboard.id)
+            scoreboard.addPlayer(player)
+            checkVisibleGroupsBy(scoreboard.name)
 
-        } else if (isDefault != null && !isDefault && players.containsKey(player.uniqueId)) {
-            val nPlayer = fastGetPlayer(player)
-
-            getScoreboardByID(nPlayer.getScoreboardId()).let {
-                if (it == null) return@let
-                it.remPlayer(player)
-                checkVisibleGroupsBy(it.name)
-            }
+        } else {
             players.remove(player.uniqueId)
-            nPlayer.delete()
             scoreboards[default_group]!!.addPlayer(player)
+            nPlayer.delete()
         }
     }
 
 //    fun checkPlayer(player: Player, scoreboard: ScoreboardE? = null, isDefault: Boolean? = null) {
-//        val nPlayer = fastGetPlayer(player)
-//
 //        if (scoreboard != null && !scoreboard.isDefault()) {
-//            val scoreName = scoreboard.name
-//
-//            if (players.containsKey(player.uniqueId)) {
-//                updatePlayerDB(nPlayer)
-//                scoreboards[scoreName]!!.remPlayer(player)
+//            if (players.containsKey(player.uniqueId) || containPlayerDB(player.uniqueId)) {
+//                val nPlayer = fastGetPlayer(player)
+//                
+//                if (containScoreboard(nPlayer.getScoreboardId()))
+//                    getScoreboardByID(nPlayer.getScoreboardId())?.remPlayer(player)
+//                
+//                nPlayer.setScoreboardId(scoreboard.id)
 //
 //            } else {
-//                insertPlayerDB(player, scoreboard.id)
+//                val nPlayer = NotzPlayerE(player)
+//                nPlayer.setScoreboardId(scoreboard.id)
 //                scoreboards[default_group]!!.remPlayer(player)
 //            }
 //
 //            checkVisibleGroupsBy(scoreboard.name)
+//            val nPlayer = fastGetPlayer(player)
 //            nPlayer.setScoreboardId(scoreboard.id)
 //
 //        } else if (isDefault != null && !isDefault && players.containsKey(player.uniqueId)) {
-//            scoreboards[default_group]!!.remPlayer(player)
-//            checkVisibleGroupsBy(default_group)
+//            val nPlayer = fastGetPlayer(player)
+//
+//            getScoreboardByID(nPlayer.getScoreboardId()).let {
+//                if (it == null) return@let
+//                it.remPlayer(player)
+//                checkVisibleGroupsBy(it.name)
+//            }
 //            players.remove(player.uniqueId)
-//            deletePlayerDB(nPlayer.id)
+//            nPlayer.delete()
 //            scoreboards[default_group]!!.addPlayer(player)
 //        }
 //    }
