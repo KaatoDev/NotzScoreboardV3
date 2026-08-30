@@ -1,6 +1,7 @@
 name: NotzScoreboard
 prefix: NotzScoreboard
 version: '$version'
+folia-supported: true
 
 main: dev.kaato.notzscoreboard.NotzScoreboard
 api-version: '26.2'
@@ -9,7 +10,7 @@ load: POSTWORLD
 authors: [ KaaDev ]
 description: A multi scoreboard plugin for staff, ranks and VIPs with multi-line system and animation support. Fully customizable.
 website: https://kaato.dev
-softdepend: [ PlaceholderAPI, ViaVersion ]
+softdepend: [ PlaceholderAPI, ViaVersion, LuckPerms ]
 
 commands:
   nscoreboard:
@@ -19,6 +20,7 @@ commands:
       - notzscoreboard
       - notzsb
       - nsb
+
 permissions:
   notzscoreboard.admin:
     description: Admin perm

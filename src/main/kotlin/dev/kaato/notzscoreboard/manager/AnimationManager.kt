@@ -13,7 +13,7 @@ object AnimationManager {
         var index = animationsLive[animation]?.inc() ?: 0
         val animLine = try {
             animLines[index]
-        } catch (e: IndexOutOfBoundsException) {
+        } catch (_: IndexOutOfBoundsException) {
             index = 0
             animLines[index]
         }

@@ -1,9 +1,10 @@
 package dev.kaato.notzscoreboard.utils
 
-import com.viaversion.viaversion.api.Via
 import dev.kaato.notzscoreboard.utils.MessageUtil.send
+import io.papermc.paper.ServerBuildInfo
+import net.kyori.adventure.key.Key
 import org.bukkit.entity.Player
-import java.util.*
+
 
 object OthersUtil {
     fun hasPermission(player: Player, permission: String): Boolean = player.hasPermission("notzscoreboard.$permission")
@@ -18,5 +19,9 @@ object OthersUtil {
         return isntAdmin
     }
 
-    fun dump() = println(Thread.dumpStack())
+//    fun dump() = println(Thread.dumpStack())
+
+    fun isFolia(): Boolean {
+        return ServerBuildInfo.buildInfo().isBrandCompatible(Key.key("papermc", "folia"))
+    }
 }

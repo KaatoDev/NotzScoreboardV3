@@ -77,7 +77,7 @@ class NScoreboardC : TabExecutor {
                 "addplayer" -> addPlayerToCMD(player, a[2], scoreboard)
                 "addgroup" -> addGroupToCMD(player, scoreboard, a[2])
                 "pause" -> pauseScoreboardCMD(player, scoreboard, a[2])
-                "remplayer" -> remPlayerFromCMD(player, a[2], scoreboard)
+                "remplayer" -> remPlayerFromCMD(player, a[2])
                 "remgroup" -> remGroupFromCMD(player, scoreboard, a[2])
                 "setcolor" -> setColorCMD(player, scoreboard, a[2])
                 "setdisplay" -> setDisplayCMD(player, scoreboard, args[2])
@@ -98,7 +98,7 @@ class NScoreboardC : TabExecutor {
 
     override fun onTabComplete(sender: CommandSender, cmd: Command, label: String, args: Array<out String>): MutableList<String> {
         val a = args.map { it.lowercase() }
-        val scoreboard = if (a.isNotEmpty()) scoreboards.containsKey(a[0]) else false
+        val scoreboard = a.isNotEmpty() && scoreboards.containsKey(a[0])
 
         return when (a.size) {
             1 -> arrayOf("create", "delete", "list", "players", "reload", "reset", "set", "update").filter { it.contains(a[0]) }.toMutableList()

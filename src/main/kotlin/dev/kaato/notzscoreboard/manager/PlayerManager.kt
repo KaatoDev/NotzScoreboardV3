@@ -2,7 +2,6 @@ package dev.kaato.notzscoreboard.manager
 
 import com.viaversion.viaversion.api.Via
 import dev.kaato.notzscoreboard.NotzScoreboard.Companion.hasViaVersion
-import dev.kaato.notzscoreboard.NotzScoreboard.Companion.plugin
 import dev.kaato.notzscoreboard.manager.ScoreboardManager.addPlayerTo
 import dev.kaato.notzscoreboard.manager.ScoreboardManager.default_group
 import dev.kaato.notzscoreboard.manager.ScoreboardManager.registerPlayerToScoreboard
@@ -10,7 +9,6 @@ import dev.kaato.notzscoreboard.manager.ScoreboardManager.unregisterPlayerFromSc
 import dev.kaato.notzscoreboard.utils.MessageUtil.log
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
-import org.bukkit.scheduler.BukkitRunnable
 import java.util.*
 
 object PlayerManager {
@@ -25,8 +23,7 @@ object PlayerManager {
     }
 
     fun leavePlayer(player: Player) {
-        if (!unregisterPlayerFromScoreboard(player))
-            log("&cUnable to remove/assign a scoreboard to the player &f${player.name}&c. Error: pmanager2")
+        if (!unregisterPlayerFromScoreboard(player)) log("&cUnable to remove/assign a scoreboard to the player &f${player.name}&c. Error: pmanager2")
     }
 
     fun resetPlayer(player: Player): Boolean {
@@ -38,10 +35,8 @@ object PlayerManager {
     }
 
     fun registerPlayerVersion(player: Player) {
-        if (hasViaVersion && Via.getAPI().getPlayerVersion(player.uniqueId) < 765)
-            oldPlayerVersions.add(player.uniqueId)
-        else if (oldPlayerVersions.contains(player.uniqueId)) 
-            oldPlayerVersions.remove(player.uniqueId)
+        if (hasViaVersion && Via.getAPI().getPlayerVersion(player.uniqueId) < 765) oldPlayerVersions.add(player.uniqueId)
+        else if (oldPlayerVersions.contains(player.uniqueId)) oldPlayerVersions.remove(player.uniqueId)
     }
 
     fun checkPlayerVersion(playerUUID: UUID): Boolean {

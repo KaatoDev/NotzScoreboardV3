@@ -1,15 +1,17 @@
 package dev.kaato.notzscoreboard.manager
 
 import dev.kaato.notzscoreboard.NotzScoreboard.Companion.cf
+import dev.kaato.notzscoreboard.NotzScoreboard.Companion.globalScheduler
+import dev.kaato.notzscoreboard.NotzScoreboard.Companion.luckPerms
 import dev.kaato.notzscoreboard.NotzScoreboard.Companion.plugin
 import dev.kaato.notzscoreboard.NotzScoreboard.Companion.sf
 import dev.kaato.notzscoreboard.database.DatabaseManager.loadScoreboardsDB
 import dev.kaato.notzscoreboard.entities.ScoreboardE
 import dev.kaato.notzscoreboard.manager.PlayerManager.initializePlayers
+import io.papermc.paper.threadedregions.scheduler.ScheduledTask
+import net.luckperms.api.node.Node
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
-import org.bukkit.scheduler.BukkitRunnable
-import org.bukkit.scheduler.BukkitTask
 import kotlin.random.Random
 
 object ScoreboardManager {
@@ -20,7 +22,7 @@ object ScoreboardManager {
     private val staffStatus = hashMapOf<Boolean, List<String>>()
     var default_group: String
     var multilineTime = 1
-    var animationTask: BukkitTask? = null
+    var animationTask: ScheduledTask? = null
     var animationInterval = 1L
 
 
@@ -41,8 +43,11 @@ object ScoreboardManager {
             it.getPlayers().contains(player.uniqueId)
         }
 
-        return if (playerScores.isEmpty())
-            addPlayerTo(player, default_group)
+        var scorePermission: String? = null
+        for (score in scoreboards.keys) if (player.hasPermission("notzscoreboard.scoreboard.${score.lowercase()}")) scorePermission = score
+
+        return if (playerScores.isEmpty()) addPlayerTo(player, default_group)
+        else if (scorePermission != null) addPlayerTo(player, scorePermission, true)
         else addPlayerTo(player, playerScores.first())
     }
 
@@ -61,7 +66,7 @@ object ScoreboardManager {
         scoreboardsPlayers[name] = mutableListOf()
 
         if (name == (getDefaultScoreboard()?.name ?: "")) scoreboard.setDefault(true)
-        if (player != null) addPlayerTo(player, name)
+        if (player != null) addPlayerTo(player, name, false)
 
         return true
     }
@@ -93,15 +98,19 @@ object ScoreboardManager {
         } else false
     }
 
-    fun addPlayerTo(player: Player, scoreboard: String): Boolean {
+    fun addPlayerTo(player: Player, scoreboard: String, fromPerm: Boolean = false): Boolean {
         val score = scoreboards[scoreboard] ?: return false
-        return addPlayerTo(player, score)
+        return addPlayerTo(player, score, fromPerm)
     }
 
-    fun addPlayerTo(player: Player, scoreboard: ScoreboardE): Boolean {
+    fun addPlayerTo(player: Player, scoreboard: ScoreboardE, fromPerm: Boolean = false): Boolean {
         return if (scoreboard.addPlayer(player.uniqueId)) {
             remPlayerFromExcept(player, scoreboard.name)
             scoreboardsPlayers[scoreboard.name]?.add(player.name)
+            if (!fromPerm && luckPerms != null) luckPerms!!.userManager.getUser(player.uniqueId).let {
+                it!!.data().add(Node.builder("notzscoreboard.scoreboard.${scoreboard.name.lowercase()}").build())
+                luckPerms!!.userManager.saveUser(it)
+            }
             true
         } else false
     }
@@ -186,8 +195,7 @@ object ScoreboardManager {
     fun shutdownScoreboard() {
         Bukkit.getOnlinePlayers().forEach(PlayerManager::leavePlayer)
 
-        if (animationTask != null)
-            animationTask?.cancel()
+        if (animationTask != null) animationTask?.cancel()
 
         scoreboards.values.forEach {
             it.forceCancelTask()
@@ -200,13 +208,11 @@ object ScoreboardManager {
 // loaders - start
 
     fun startAnimation() {
-        animationTask = object : BukkitRunnable() {
-            override fun run() {
-                scoreboards.values.forEach {
-                    it.animatePlayers()
-                }
+        animationTask = globalScheduler.runAtFixedRate(plugin, {
+            scoreboards.values.forEach {
+                it.animatePlayers()
             }
-        }.runTaskTimer(plugin, 0, animationInterval)
+        }, 1, animationInterval)
     }
 
     fun loadScoreboardManager() {

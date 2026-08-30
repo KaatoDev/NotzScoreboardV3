@@ -2,8 +2,6 @@ package dev.kaato.notzscoreboard.manager
 
 import dev.kaato.notzscoreboard.NotzScoreboard.Companion.msgf
 import dev.kaato.notzscoreboard.NotzScoreboard.Companion.sf
-import dev.kaato.notzscoreboard.manager.AnimationManager.getAnimation
-import dev.kaato.notzscoreboard.manager.AnimationManager.hasAnimation
 import dev.kaato.notzscoreboard.utils.MessageUtil.set
 import me.clip.placeholderapi.PlaceholderAPI
 import org.bukkit.Bukkit
@@ -24,23 +22,19 @@ object PlaceholderManager {
     }
 
     fun remPlaceholder(placeholder: String) {
-        if (placeholders.containsKey(placeholder))
-            placeholders.remove(placeholder)
+        if (placeholders.containsKey(placeholder)) placeholders.remove(placeholder)
     }
 
     fun getPlaceholder(placeholder: String): String {
-        return if (placeholder.contains(":"))
-            placeholders[placeholder.split(":")[0]] ?: set(placeholder.split(":")[1])
+        return if (placeholder.contains(":")) placeholders[placeholder.split(":")[0]] ?: set(placeholder.split(":")[1])
         else placeholders[placeholder] ?: "[$placeholder]"
     }
 
     fun getPlaceholder(placeholder: String, player: Player): String {
-        return if (placeholder == "money")
-            placeholderMoney(player)
+        return if (placeholder == "money") placeholderMoney(player)
         else if (placeholder.contains(":")) {
             getPlaceholder(placeholder.split(":")[0], player).let {
-                if (it.contains("[") || it.contains("%") || it.isBlank())
-                    set(placeholder.split(":")[1])
+                if (it.contains("[") || it.contains("%") || it.isBlank()) set(placeholder.split(":")[1])
                 else it
             }
         } else if (hasPlaceholder(placeholder)) getPlaceholder(placeholder) else PlaceholderAPI.setPlaceholders(player, "%$placeholder%")
@@ -66,7 +60,7 @@ object PlaceholderManager {
             } else "&2$&a0"
             placeholder
 
-        } catch (ignored: Exception) {
+        } catch (_: Exception) {
             "{money}"
         }
     }

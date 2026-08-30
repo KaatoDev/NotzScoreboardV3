@@ -1,7 +1,5 @@
 package dev.kaato.notzscoreboard.entities
 
-import dev.kaato.notzscoreboard.NotzScoreboard.Companion.sf
-import dev.kaato.notzscoreboard.manager.ScoreboardManager.getTemplate
 import java.time.LocalDateTime
 import java.util.*
 

@@ -14,5 +14,8 @@ multiline-time: 3
 # Animation ticksss
 animation-interval: 2
 
+# Enable or disable BStats
+bStats: true
+
 ## Do not change this
 version: 1  
