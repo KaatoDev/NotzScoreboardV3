@@ -48,9 +48,14 @@ object MainManager {
             } catch (_: IllegalArgumentException) {
                 log("ViaVersion detected, but not responding correctly. Try updating ViaVersion.")
             }
-            val provider = Bukkit.getServicesManager().getRegistration<LuckPerms?>(LuckPerms::class.java)
-            if (provider != null) {
-                luckPerms = provider.getProvider()
+
+            if (getPluginManager().getPlugin("LuckPerms") != null) try {
+                val provider = Bukkit.getServicesManager().getRegistration<LuckPerms?>(LuckPerms::class.java)
+                if (provider != null) {
+                    luckPerms = provider.getProvider()
+                }
+            } catch (_: NoClassDefFoundError) {
+                log("LuckPerms not detected.")
             }
 
             try {

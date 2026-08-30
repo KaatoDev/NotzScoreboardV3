@@ -47,7 +47,7 @@ object ScoreboardManager {
         for (score in scoreboards.keys) if (player.hasPermission("notzscoreboard.scoreboard.${score.lowercase()}")) scorePermission = score
 
         return if (playerScores.isEmpty()) addPlayerTo(player, default_group)
-        else if (scorePermission != null) addPlayerTo(player, scorePermission, true)
+        else if (scorePermission != null && !player.isOp) addPlayerTo(player, scorePermission, true)
         else addPlayerTo(player, playerScores.first())
     }
 
@@ -116,9 +116,16 @@ object ScoreboardManager {
     }
 
     fun remPlayerFromExcept(player: Player, exceptScoreboard: String) {
-        scoreboards.values.filter { it.name != exceptScoreboard && it.containsPlayer(player.uniqueId) }.forEach {
-            it.remPlayer(player.uniqueId)
-            scoreboardsPlayers[it.name]?.remove(player.name)
+        scoreboards.values.filter { it.name != exceptScoreboard }.forEach {
+            if (luckPerms != null) luckPerms!!.userManager.getUser(player.uniqueId).let { user ->
+                user!!.data().remove(Node.builder("notzscoreboard.scoreboard.${it.name.lowercase()}").build())
+                luckPerms!!.userManager.saveUser(user)
+            }
+
+            if (it.containsPlayer(player.uniqueId)) {
+                it.remPlayer(player.uniqueId)
+                scoreboardsPlayers[it.name]?.remove(player.name)
+            }
         }
     }
 

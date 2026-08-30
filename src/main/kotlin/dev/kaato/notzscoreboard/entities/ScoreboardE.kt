@@ -239,10 +239,6 @@ class ScoreboardE(val id: Int) {
     fun remPlayer(playerUUID: UUID): Boolean {
         if (players.contains(playerUUID)) {
             players.remove(playerUUID)
-            if (luckPerms != null && hasPermission(Bukkit.getPlayer(playerUUID)!!, "notzscoreboard.scoreboard.${name.lowercase()}")) luckPerms!!.userManager.getUser(playerUUID).let {
-                it!!.data().remove(Node.builder("notzscoreboard.scoreboard.${name.lowercase()}").build())
-                luckPerms!!.userManager.saveUser(it)
-            }
             databaseUpdate()
         }
         return remOnlinePlayer(playerUUID)
