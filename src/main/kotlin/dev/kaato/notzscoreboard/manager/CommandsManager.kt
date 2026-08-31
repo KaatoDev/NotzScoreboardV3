@@ -55,7 +55,7 @@ object CommandsManager {
         try {
             if (pauseScoreboard(scoreboard, minutes.toInt())) send(player, "pauseScoreboard", defaults = listOf(display(scoreboard), minutes, if (minutes.toInt() > 1) "s" else ""))
             else send(player, "notFound2")
-        } catch (e: ParseException) {
+        } catch (_: ParseException) {
             send(player, "pause")
         }
     }
@@ -75,7 +75,7 @@ object CommandsManager {
         else send(player, "addGroupTo2", defaults = listOf(display(group), display(scoreboard)))
     }
 
-    fun remPlayerFromCMD(sender: Player, target: String, scoreboard: String) {
+    fun remPlayerFromCMD(sender: Player, target: String) {
         val player = Bukkit.getPlayerExact(target)
         if (player == null) send(sender, "notFound1")
         else resetPlayerCMD(sender, target)
@@ -174,7 +174,7 @@ object CommandsManager {
 
             send(player, "reload2")
 
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             send(player, "reload3")
 
         } else send(player, "no-perm")
@@ -188,7 +188,7 @@ object CommandsManager {
 
             send(player, "reload5")
 
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             send(player, "reload6")
 
         } else send(player, "no-perm")

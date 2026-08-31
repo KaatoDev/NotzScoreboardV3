@@ -2,6 +2,8 @@
 
 package dev.kaato.notzscoreboard.entities
 
+import dev.kaato.notzscoreboard.NotzScoreboard.Companion.globalScheduler
+import dev.kaato.notzscoreboard.NotzScoreboard.Companion.luckPerms
 import dev.kaato.notzscoreboard.NotzScoreboard.Companion.plugin
 import dev.kaato.notzscoreboard.NotzScoreboard.Companion.sf
 import dev.kaato.notzscoreboard.database.DatabaseManager.deleteScoreboardDB
@@ -27,8 +29,11 @@ import dev.kaato.notzscoreboard.utils.MessageUtil.c
 import dev.kaato.notzscoreboard.utils.MessageUtil.join
 import dev.kaato.notzscoreboard.utils.MessageUtil.log
 import dev.kaato.notzscoreboard.utils.MessageUtil.set
+import dev.kaato.notzscoreboard.utils.OthersUtil.hasPermission
 import io.papermc.paper.scoreboard.numbers.NumberFormat
+import io.papermc.paper.threadedregions.scheduler.ScheduledTask
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
+import net.luckperms.api.node.Node
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.entity.Player
@@ -40,19 +45,16 @@ import java.time.LocalDateTime
 import java.util.*
 import kotlin.random.Random
 
-/**
- * @param name Unique name to be used in commands.
- * @param display Displayname that will appear on messages.
- * @param header Header template of the scoreboard.
- * @param template Main template of the scoreboard.
- * @param footer Footer template of the scoreboard.
- * @param color The color that will be set at the start of each line.
- * @param visibleGroups List of scoreboard groups that's used for the {staff} placeholder.
- */
+
 class ScoreboardE(val id: Int) {
     /**
      * @param name Unique name to be used in commands.
      * @param display Displayname that will appear on messages.
+     * @param header Header template of the scoreboard.
+     * @param template Main template of the scoreboard.
+     * @param footer Footer template of the scoreboard.
+     * @param color The color that will be set at the start of each line.
+     * @param visibleGroups List of scoreboard groups that's used for the {staff} placeholder.
      */
     constructor(name: String, display: String, color: String = "&e", header: String = "", template: String = "player", footer: String = "staff-status", visibleGroups: MutableList<String> = mutableListOf(), players: MutableList<UUID> = mutableListOf()) : this(insertScoreboardDB(name, display, color, header, template, footer, visibleGroups, players))
 
@@ -71,7 +73,7 @@ class ScoreboardE(val id: Int) {
     private var suffixLines = hashMapOf<String, String>()
     private var onlinePlayers = mutableListOf<UUID>()
     private var isntDefault = true
-    private var task: BukkitTask? = null
+    private var task: ScheduledTask? = null
     private val multilineRegex = Regex("""--(-?)(.*?)""")
     private val multilines = hashMapOf<String, MutableList<String>>()
     private val multilinesInterval = hashMapOf<String, Int>()
@@ -324,10 +326,6 @@ class ScoreboardE(val id: Int) {
         lines.removeAll(removeLines)
     }
 
-    fun updateMultilines() {
-
-    }
-
     // updaters - end
 // -------------------
     // scoreboard - start
@@ -536,11 +534,7 @@ class ScoreboardE(val id: Int) {
     private fun runTask() {
         val time = (if (sf.config.contains("priority-time.$name")) sf.config.getLong("priority-time.$name") else 20) * 20
 
-        task = object : BukkitRunnable() {
-            override fun run() {
-                updatePlayers()
-            }
-        }.runTaskTimer(plugin, 0, time)
+        task = globalScheduler.runAtFixedRate(plugin, { updatePlayers() }, 1, time)
     }
 
     /** Cancel the self-update scoreboard task */
@@ -567,11 +561,7 @@ class ScoreboardE(val id: Int) {
         return if (task != null) {
             task!!.cancel()
 
-            object : BukkitRunnable() {
-                override fun run() {
-                    runTask()
-                }
-            }.runTaskLater(plugin, minutes * 60 * 20L)
+            globalScheduler.runDelayed(plugin, { runTask() }, minutes * 60 * 20L)
 
             true
         } else false

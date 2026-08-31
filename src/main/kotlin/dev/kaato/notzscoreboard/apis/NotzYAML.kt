@@ -10,7 +10,7 @@ import java.util.logging.Level
 
 class NotzYAML(private val fileName: String) {
     companion object {
-        private val yamlVersion: Int = 1
+        private const val YAML_VERSION: Int = 1
     }
 
     private val file = File(plugin.dataFolder, "$fileName.yml")
@@ -36,9 +36,9 @@ class NotzYAML(private val fileName: String) {
 
         if (config.contains("version")) {
             val yamlOldVersion = config.getInt("version", 0)
-            if (yamlOldVersion != yamlVersion) {
+            if (yamlOldVersion != YAML_VERSION) {
                 backupOldConfig(yamlOldVersion)
-                config.set("version", yamlVersion)
+                config.set("version", YAML_VERSION)
             }
         }
 
@@ -56,9 +56,7 @@ class NotzYAML(private val fileName: String) {
             config.save(file)
         } catch (e: IOException) {
             plugin.logger.log(
-                Level.SEVERE,
-                "Could not save config ${file.name}",
-                e
+                Level.SEVERE, "Could not save config ${file.name}", e
             )
         }
     }
