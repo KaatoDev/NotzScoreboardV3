@@ -1,3 +1,6 @@
+//import org.gradle.kotlin.dsl.assign
+//import org.gradle.kotlin.dsl.invoke
+
 plugins {
     kotlin("jvm") version "2.4.10"
     id("com.gradleup.shadow") version "9.6.1"
